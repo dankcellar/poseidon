@@ -1,0 +1,14 @@
+# editors
+.idea/
+*.iml
+
+# truffle
+build/
+node_modules/
+yarn-error.log
+
+# dist
+dist/
+
+# npm
+package-lock.json
