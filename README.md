@@ -12,7 +12,7 @@ sudo npm install -g ganache-cli
 
 truffle test
 
-ganache-cli -a=9 -b 1 -h 0.0.0.0 -l 0xfffffffffff -g 0x01
+ganache-cli -a 9 -b 1 -h 0.0.0.0 -l 0xfffffffffff -g 0x01
 truffle migrate --reset --network dev
 npm run dev
 ```
