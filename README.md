@@ -1,8 +1,8 @@
-[![Build Status](https://travis-ci.org/amper-lab/fishtank.svg)](https://travis-ci.org/amper-lab/fishtank)
+[![Build Status](https://travis-ci.org/amper-lab/poseidon.svg)](https://travis-ci.org/amper-lab/poseidon)
 
-# FishTank
+# Poseidon
 
-FishTank is a ERC-721 token.
+Poseidon is a ERC-721 token.
 
 ```
 sudo npm install -g truffle

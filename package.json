@@ -1,7 +1,7 @@
 {
-  "name": "fishtank",
+  "name": "poseidon",
   "version": "1.0.0",
-  "description": "[![Build Status](https://travis-ci.org/amper-lab/fishtank.svg)](https://travis-ci.org/amper-lab/fishtank)",
+  "description": "[![Build Status](https://travis-ci.org/amper-lab/poseidon.svg)](https://travis-ci.org/amper-lab/poseidon)",
   "directories": {
     "test": "test"
   },
@@ -14,12 +14,12 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/amper-lab/fishtank.git"
+    "url": "git+https://github.com/amper-lab/poseidon.git"
   },
   "author": "Amperlab",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/amper-lab/fishtank/issues"
+    "url": "https://github.com/amper-lab/poseidon/issues"
   },
-  "homepage": "https://github.com/amper-lab/fishtank#readme"
+  "homepage": "https://github.com/amper-lab/poseidon#readme"
 }

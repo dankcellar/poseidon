@@ -4,7 +4,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 
-contract Fishtank is ERC721 {
+// TODO change to TradeableERC721Token from Opensea?
+contract Poseidon is ERC721 {
     uint16 constant _mintMax = 10000;
     uint16 private _mintCounter;
 
@@ -12,9 +13,10 @@ contract Fishtank is ERC721 {
     mapping(uint256 => uint256) private _power;
 
     // Create the array that each token has a number
-    constructor() ERC721("Fishtank", "FISH") {}
+    constructor() ERC721("Poseidon", "AQUA") {}
 
     // Mints a token with power 1, its called in the constructor
+    // TODO make it ownable?
     function mintFish(address _to) public {
         require(_mintCounter < _mintMax, "All fish has been minted");
         _safeMint(_to, _mintCounter);

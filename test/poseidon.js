@@ -1,10 +1,10 @@
-const Fishtank = artifacts.require("Fishtank.sol");
+const Poseidon = artifacts.require("Poseidon.sol");
 const expectedExceptionPromise = require("./util/expected-exception-promise.js");
 const getTransactionCost = require("./util/get-transaction-cost.js");
 const { toWei, toBN, fromAscii } = web3.utils;
 const zeroAddress = "0x0000000000000000000000000000000000000000";
 
-contract('Fishtank', accounts => {
+contract('Poseidon', accounts => {
     const [ owner, alice, bob, carol ] = accounts;
     let instance;
 
@@ -14,8 +14,8 @@ contract('Fishtank', accounts => {
         assert.isTrue(aliceBalanceBN.gte(minimum));
     });
 
-    beforeEach("deploy fishtank", async function() {
-        instance = await Fishtank.new({from: owner});
+    beforeEach("deploy poseidon", async function() {
+        instance = await Poseidon.new({from: owner});
     });
 
     describe("verify deployment", function() {
