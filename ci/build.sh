@@ -2,7 +2,7 @@
 
 set -x
 set -e
-ganache-cli --accounts=10 -l 0xfffffffffff -g 0x01 -e 4200 -m "dream feel bract hill river gate farm naive paddle script destroy word" > /dev/null &
+ganache-cli -a=9 -b 1 -h 0.0.0.0 -l 0xfffffffffff -g 0x01 > /dev/null &
 TESTRPC_PID=$!
 trap "kill $TESTRPC_PID" EXIT INT TERM
 
