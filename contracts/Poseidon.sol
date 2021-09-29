@@ -31,4 +31,9 @@ contract Poseidon is ERC721Tradable {
     function baseTokenURI() override public pure returns (string memory) {
         return "https://poseidon.house/api/token/";
     }
+
+    // Return token power
+    function tokenPower(uint256 _token) public view returns(uint256) {
+        return _power[_token];
+    }
 }
