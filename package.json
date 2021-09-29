@@ -6,12 +6,15 @@
     "test": "test"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.3.2",
+    "openzeppelin-solidity": "~4.1.0",
     "solc": "^0.8.6",
     "truffle": "^5.4.11",
+    "truffle-hdwallet-provider": "1.0.17",
     "web3": "^1.5.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "truffle-plugin-verify": "^0.5.8"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/amper-lab/poseidon.git"

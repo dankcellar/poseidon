@@ -15,7 +15,7 @@ contract('Poseidon', accounts => {
     });
 
     beforeEach("deploy poseidon", async function() {
-        instance = await Poseidon.new({from: owner});
+        instance = await Poseidon.new(zeroAddress, {from: owner});
     });
 
     describe("verify deployment", function() {
@@ -25,20 +25,20 @@ contract('Poseidon', accounts => {
             let args = txObj.logs[0].args;
             assert.strictEqual(args["from"], zeroAddress, "Token comes from address 0");
             assert.strictEqual(args["to"], alice, "Token goes to alice");
-            assert.strictEqual(args["tokenId"].toString(), "0", "First token minted is tokenId 0");
-            let ownerOfToken0 = await instance.ownerOf(0, {from: owner});
-            assert.strictEqual(ownerOfToken0, alice, "Owner of token 0 is alice");
+            assert.strictEqual(args["tokenId"].toString(), "1", "First token minted is tokenId 0");
+            let ownerOfToken0 = await instance.ownerOf(1, {from: owner});
+            assert.strictEqual(ownerOfToken0, alice, "Owner of token 1 is alice");
         });
-        // it("should mint to 10000", async function() {
-        //     for (let i = 1; i < 10000; i++) {
-        //         await instance.mintFish(alice, {from: owner});
-        //         console.log(i);
-        //     }
-        // });
-        // it("should not mint 10001", async function() {
-        //     await expectedExceptionPromise(function() {
-        //         return instance.mintFish(alice, {from: owner});
-        //     });
-        // });
+    });
+
+    describe("should mint only 10 fishes", function() {
+        it("should mint 10, then fail", async function() {
+            for (let i = 0; i < 10; i++) {
+                await instance.mintFish(alice, {from: owner});
+            }
+            await expectedExceptionPromise(function() {
+                return instance.mintFish(alice, {from: owner});
+            });
+        });
     });
 });
