@@ -9,7 +9,7 @@ export default function App() {
 
     useEffect(() => {
         loadWeb3().then();
-        // loadBlockchainData().then();
+        loadBlockchainData().then();
     }, []);
 
     const loadWeb3 = async () => {
@@ -27,7 +27,7 @@ export default function App() {
         const web3 = window.web3;
         // Load account
         const accounts = await web3.eth.getAccounts();
-        setAccount({account: accounts[0]});
+        setAccount(accounts[0]);
         // Network
         const networkId = await web3.eth.net.getId();
         const networkData = Poseidon.networks[networkId];
@@ -36,6 +36,7 @@ export default function App() {
             const address = networkData.address;
             const contract = new web3.eth.Contract(abi, address);
             setContract(contract);
+            console.log(contract.methods);
             const totalSupply = await contract.methods.totalSupply().call();
             setTotalSupply(totalSupply);
         } else {
@@ -43,13 +44,41 @@ export default function App() {
         }
     };
 
+    const mint = async () => {
+        await contract.methods.mintFish(account).send({from: account});
+    };
+
+    const hunt = async (predator, prey) => {
+        await contract.methods.hunt(predator, prey).send({from: account});
+    };
+
+    const getTokenOwner = async (token) => {
+        return await contract.methods.ownerOf(token).call();
+    };
+
+    const getTokenPower = async (token) => {
+        return await contract.methods.tokenPower(token).call();
+    };
+
+    const getTokenUri = async (token) => {
+        return await contract.methods.tokenURI(token).call();
+    };
+
+    const getAll = async (token) => {
+        console.log(await getTokenOwner(token));
+        console.log(await getTokenPower(token));
+        console.log(await getTokenUri(token));
+    };
+
     return (
         <div className="App">
             <header className="App-header">
-                <p>{contract}</p>
                 <p>{account}</p>
+                <p>{contract.toString()}</p>
                 <p>{totalSupply}</p>
-
+                <p><a onClick={() => mint(account)}>Mint</a></p>
+                <p><a onClick={() => hunt(1, 2)}>Hunt</a></p>
+                <p><a onClick={() => getAll(1)}>tokenowner</a></p>
             </header>
         </div>
     );

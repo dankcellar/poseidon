@@ -16,6 +16,7 @@ ganache-cli
 truffle test
 
 # running development
+ganache-cli -m "seed"
 truffle migrate --reset --network development
 cd client/ && npm run dev
 ```

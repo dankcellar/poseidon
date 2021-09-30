@@ -36,7 +36,7 @@ contract Poseidon is ERC721Tradable {
     }
 
     // Return token power
-    function tokenPower(uint256 _token) public view returns(uint256) {
+    function tokenPower(uint256 _token) public view returns (uint256) {
         return _power[_token];
     }
 }
