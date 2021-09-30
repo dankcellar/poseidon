@@ -1,16 +1,15 @@
-import logo from '../logo.svg';
-import './App.css';
 import Web3 from 'web3';
 import Poseidon from '../contracts/Poseidon.json';
 import {useEffect, useState} from "react";
 
 export default function App() {
-  const [contract, setContract] = useState({});
-  const [totalSupply, setTotalSupply] = useState(0);
+    const [account, setAccount] = useState("");
+    const [contract, setContract] = useState({});
+    const [totalSupply, setTotalSupply] = useState(0);
 
     useEffect(() => {
         loadWeb3().then();
-        loadBlockchainData().then();
+        // loadBlockchainData().then();
     }, []);
 
     const loadWeb3 = async () => {
@@ -28,8 +27,8 @@ export default function App() {
         const web3 = window.web3;
         // Load account
         const accounts = await web3.eth.getAccounts();
-        this.setState({account: accounts[0]});
-
+        setAccount({account: accounts[0]});
+        // Network
         const networkId = await web3.eth.net.getId();
         const networkData = Poseidon.networks[networkId];
         if (networkData) {
@@ -47,18 +46,10 @@ export default function App() {
     return (
         <div className="App">
             <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo"/>
-                <p>
-                    Edit <code>src/App.js</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
+                <p>{contract}</p>
+                <p>{account}</p>
+                <p>{totalSupply}</p>
+
             </header>
         </div>
     );

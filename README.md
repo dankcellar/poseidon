@@ -15,7 +15,7 @@ cp .env.sample .env && vim .env
 ganache-cli
 truffle test
 
-# running
-truffle migrate --reset --network dev
-npm run dev
+# running development
+truffle migrate --reset --network development
+cd client/ && npm run dev
 ```

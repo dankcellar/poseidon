@@ -6,14 +6,15 @@
     "test": "test"
   },
   "dependencies": {
-    "openzeppelin-solidity": "~4.1.0",
+    "openzeppelin-solidity": "^4.1.0",
     "solc": "^0.8.6",
     "truffle": "^5.4.11",
     "truffle-hdwallet-provider": "1.0.17",
     "web3": "^1.5.3"
   },
   "devDependencies": {
-    "truffle-plugin-verify": "^0.5.8"
+    "truffle-plugin-verify": "^0.5.8",
+    "webpack": "4.44.2"
   },
   "repository": {
     "type": "git",
