@@ -1,5 +1,5 @@
 [![Build Status](https://app.travis-ci.com/amper-lab/poseidon.svg)](https://app.travis-ci.com/github/amper-lab/poseidon)
-https://api.travis-ci.com/amper-lab/poseidon.svg
+
 # Poseidon
 
 Poseidon is a ERC-721 token.
