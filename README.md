@@ -10,6 +10,7 @@ sudo npm install -g truffle
 sudo npm install -g ganache-cli
 npm install
 cp .env.sample .env && vim .env
+cd client/ && npm install
 
 # testing
 ganache-cli
@@ -18,5 +19,5 @@ truffle test
 # running development
 ganache-cli -m "seed"
 truffle migrate --reset --network development
-cd client/ && npm run dev
+cd client/ && npm start
 ```
