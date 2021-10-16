@@ -30,7 +30,6 @@ contract Poseidon is ERC721, Ownable {
     uint256 private _privateMinted = 0;
 
     mapping(uint256 => uint256) private _power;
-
     event Hunt(address indexed from, uint256 indexed predator, uint256 indexed prey, uint256 power);
 
     constructor() ERC721("Poseidon", "FISH") {}

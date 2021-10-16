@@ -1,5 +1,6 @@
 const Poseidon = artifacts.require("Poseidon.sol");
 const expectedExceptionPromise = require("./util/expected-exception-promise.js");
+const getTransactionGasUsed = require("./util/get-transaction-cost.js");
 const { toWei, toBN } = web3.utils;
 const zeroAddress = "0x0000000000000000000000000000000000000000";
 
@@ -37,13 +38,13 @@ contract('Poseidon', accounts => {
     });
 
     describe("mint fish", function() {
-        it("should should be fish price of 0.08 ether", async function() {
-            assert.strictEqual(fishPrice.toString(), toWei("0.08", "ether").toString(), "Price should be 0.08");
+        it("should should be right fish price", async function() {
+            assert.strictEqual(fishPrice.toString(), toWei("0.08", "ether").toString(), "Mint price should be correct");
         });
-        it("should mint to alice", async function() {
-            let txObj = await instance.mint(1, {from: alice, value: fishPrice});
-            assert.strictEqual(txObj.logs.length, 1, "1 event should be emitted");
-            let args = txObj.logs[0].args;
+        it("should mint to alice and bob", async function() {
+            let txObj1 = await instance.mint(1, {from: alice, value: fishPrice});
+            assert.strictEqual(txObj1.logs.length, 1, "1 event should be emitted");
+            let args = txObj1.logs[0].args;
             assert.strictEqual(args["from"], zeroAddress, "Token should come from zeroAddress");
             assert.strictEqual(args["to"], alice, "Token should go to alice");
             assert.strictEqual(args["tokenId"].toString(), "1", "First token minted should be tokenId 1");
@@ -53,30 +54,96 @@ contract('Poseidon', accounts => {
             // check token 1 power
             let power = await instance.power(1, {from: owner});
             assert.strictEqual(power.toString(), "1", "Token 1 should have power 2");
+            // mint to bob
+            await instance.mint(1, {from: bob, value: fishPrice});
+            let ownerOfToken2 = await instance.ownerOf(2, {from: owner});
+            assert.strictEqual(ownerOfToken2, bob, "Owner of token 2 should be bob");
+            // token 0 does not exist
+            await expectedExceptionPromise(function() {
+                return instance.ownerOf(0, {from: owner});
+            });
+            // token 3 does not exist
+            await expectedExceptionPromise(function() {
+                return instance.ownerOf(3, {from: owner});
+            });
+        });
+        it("should mint many to alice", async function() {
+            let txObj = await instance.mint(10, {from: alice, value: fishPrice*10});
+            assert.strictEqual(txObj.logs.length, 10, "10 events should be emitted");
+            // check token 1 and 10 owner
+            let ownerOfToken1 = await instance.ownerOf(1, {from: owner});
+            let ownerOfToken10 = await instance.ownerOf(10, {from: owner});
+            assert.strictEqual(ownerOfToken1, alice, "Owner of token 1 should be alice");
+            assert.strictEqual(ownerOfToken10, alice, "Owner of token 10 should be alice");
+            // check token 1 power
+            let power1 = await instance.power(1, {from: owner});
+            let power10 = await instance.power(10, {from: owner});
+            assert.strictEqual(power1.toString(), "1", "Token 1 should have power 1");
+            assert.strictEqual(power10.toString(), "1", "Token 10 should have power 1");
+        });
+        it("should not let mint if sale did not start", async function() {
+            await instance.setStartingBlock(999999999, {from: owner});
+            await expectedExceptionPromise(function() {
+                return instance.mint(1, {from: alice, value: fishPrice});
+            });
+        });
+        it("should not let alice mint more than 10", async function() {
+            await expectedExceptionPromise(function() {
+                return instance.mint(11, {from: alice, value: fishPrice*11});
+            });
         });
         it("should not let alice mint for free", async function() {
             await expectedExceptionPromise(function() {
                 return instance.mint(1, {from: alice});
             });
         });
-        it("should not let alice mint with less", async function() {
+        it("should not let alice mint for less price", async function() {
             await expectedExceptionPromise(function() {
                 return instance.mint(1, {from: alice, value: "79999999999999999"});
             });
         });
-
-        /*
-        it("should mint 10 fishes, then fail", async function() {
-            for (let i = 0; i < 10; i++) {
-                await instance.mint({from: alice, value: fishPrice});
-            }
+        it("should not let alice mint more than one for less price", async function() {
             await expectedExceptionPromise(function() {
-                // should revert when minting the 11
-                return instance.mint(alice, {from: owner});
+                return instance.mint(2, {from: alice, value: "159999999999999999"});
             });
         });
-        */
+        // it("should fail when trying to mint more than max supply (needs mint public to be set to 10)", async function() {
+        //     for (let i = 0; i < 8; i++) {
+        //         await instance.mint(1, {from: alice, value: fishPrice});
+        //     }
+        //     await expectedExceptionPromise(function() {
+        //         return instance.mint(3, {from: alice, value: fishPrice});
+        //     });
+        //     await instance.mint(1, {from: alice, value: fishPrice});
+        //     await expectedExceptionPromise(function() {
+        //         return instance.mint(2, {from: alice, value: fishPrice});
+        //     });
+        //     await instance.mint(1, {from: alice, value: fishPrice});
+        //     await expectedExceptionPromise(function() {
+        //         return instance.mint(1, {from: bob, value: fishPrice});
+        //     });
+        //     await expectedExceptionPromise(function() {
+        //         return instance.mint(2, {from: bob, value: fishPrice});
+        //     });
+        // });
     });
+
+
+    /*
+    mint private to many users
+    mint would exceed supply in private
+
+    hunt from private mints
+
+    starting block works
+
+    withdraw works
+    withdraw only from owner
+
+    contract uri works
+
+    base uri works
+     */
 
     describe("mint private fish", function() {
         it("should not let alice mint", async function() {
