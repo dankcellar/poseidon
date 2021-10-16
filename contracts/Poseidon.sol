@@ -1,41 +1,67 @@
+// SPDX-License-Identifier: MIT
+//
+//  :::::::::   ::::::::   ::::::::  :::::::::: ::::::::::: :::::::::   ::::::::  ::::    :::
+//  :+:    :+: :+:    :+: :+:    :+: :+:            :+:     :+:    :+: :+:    :+: :+:+:   :+:
+//  +:+    +:+ +:+    +:+ +:+        +:+            +:+     +:+    +:+ +:+    +:+ :+:+:+  +:+
+//  +#++:++#+  +#+    +:+ +#++:++#++ +#++:++#       +#+     +#+    +:+ +#+    +:+ +#+ +:+ +#+
+//  +#+        +#+    +#+        +#+ +#+            +#+     +#+    +#+ +#+    +#+ +#+  +#+#+#
+//  #+#        #+#    #+# #+#    #+# #+#            #+#     #+#    #+# #+#    #+# #+#   #+#+#
+//  ###         ########   ########  ########## ########### #########   ########  ###    ####
+//                                                                               by Amperlabs
+
 pragma solidity 0.8.6;
+import "openzeppelin-solidity/contracts/token/ERC721/ERC721.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 
-import "./ERC721Tradable.sol";
+contract Poseidon is ERC721, Ownable {
+    uint256 public constant MINT_PUBLIC = 9580;
+    uint256 public constant MINT_PRIVATE = 420;
+    uint256 public constant MINT_PRICE = 0.08 ether;
+    uint256 public constant MINT_MAX_TX = 10;
+    string public provenanceHash; // sha256 string of concatenation of sha256 strings of ordered art images
 
-contract Poseidon is ERC721Tradable {
-    uint256 public constant FISH_PUBLIC = 9580;
-    uint256 public constant FISH_PRIVATE = 420;
-    uint256 public constant FISH_PRICE = 0.08 ether;
+    uint256 public startingBlock = 999999999;
 
+    string private _contractURI;
+    string private _tokenBaseURI = "https://poseidonnft.eth.link/api/metadata/";
+
+    uint256 private _currentTokenId = 0;
     uint256 private _publicMinted = 0;
     uint256 private _privateMinted = 0;
 
-    event Hunt(address indexed from, uint256 indexed predator, uint256 indexed prey, uint256 power);
-
-    // Mapping from token ID to its power
     mapping(uint256 => uint256) private _power;
 
-    // Create the array that each token has a number
-    constructor(address _proxyRegistryAddress) ERC721Tradable("Poseidon", "FISH", _proxyRegistryAddress) {}
+    event Hunt(address indexed from, uint256 indexed predator, uint256 indexed prey, uint256 power);
 
-    // Mints a fish with power 1
-    function mintFish() public payable {
-        require(msg.value == FISH_PRICE, "NOT_EXACT_ETH");
-        require(_publicMinted < FISH_PUBLIC, "PUBLIC_SOLD_OUT");
-        _publicMinted++;
-        _mintTo(msg.sender);
-        _power[_currentTokenId] = 1;
+    constructor() ERC721("Poseidon", "FISH") {}
+
+    // Public sale
+    function mint(uint256 _quantity) external payable {
+        require(block.number >= startingBlock, "SALE_NOT_STARTED");
+        require(_quantity <= MINT_MAX_TX, "QUANTITY_ABOVE_MAX_MINT");
+        require(_publicMinted + _quantity <= MINT_PUBLIC, "WOULD_EXCEED_SUPPLY");
+        require(msg.value >= MINT_PRICE * _quantity, "NOT_ENOUGH_ETH");
+        require(msg.sender == tx.origin, "CONTRACTS_CANNOT_MINT");
+        _publicMinted += _quantity;
+        for (uint256 i = 0; i < _quantity; i++) {
+            _currentTokenId++;
+            _safeMint(msg.sender, _currentTokenId);
+            _power[_currentTokenId] = 1;
+        }
     }
 
-    // Mints a fish with power 1, private sale
-    function mintFishPrivate(address _to) external onlyOwner {
-        require(_privateMinted < FISH_PRIVATE, "PRIVATE_SOLD_OUT");
-        _privateMinted++;
-        _mintTo(_to);
-        _power[_currentTokenId] = 1;
+    // Minting for the devs, gifts, giveaways, derivatives and marketing
+    function mintPrivate(address[] memory _to) external onlyOwner {
+        require(_privateMinted + _to.length <= MINT_PRIVATE, "WOULD_EXCEED_SUPPLY");
+        _privateMinted += _to.length;
+        for (uint256 i = 0; i < _to.length; i++) {
+            _currentTokenId++;
+            _safeMint(_to[i], _currentTokenId);
+            _power[_currentTokenId] = 1;
+        }
     }
 
-    // Hunt will burn the _prey token and add the _prey power to _predator
+    // Hunt burns a token and adds it's power to another token
     function hunt(uint256 _predator, uint256 _prey) external {
         require(ownerOf(_predator) == _msgSender(), "MUST_OWN_PREDATOR");
         require(ownerOf(_prey) == _msgSender(), "MUST_OWN_PREY");
@@ -45,18 +71,37 @@ contract Poseidon is ERC721Tradable {
         emit Hunt(_msgSender(), _predator, _prey, _power[_predator]);
     }
 
-    // Withdraw funds
+    // View the power of a token
+    function power(uint256 _token) public view returns (uint256) {
+        return _power[_token];
+    }
+
+    // Set starting block for the sale
+    function setStartingBlock(uint256 _startingBlock) external onlyOwner {
+        startingBlock = _startingBlock;
+    }
+
+    // Transfer all the balance to the owner
     function withdraw() external onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
     }
 
-    // Return token power
-    function tokenPower(uint256 _token) public view returns (uint256) {
-        return _power[_token];
+    // View Contract-level URI
+    function contractURI() public view returns (string memory) {
+        return _contractURI;
     }
 
-    // Return url
-    function baseTokenURI() override public pure returns (string memory) {
-        return "https://poseidonnft.eth.link/api/token/";
+    // Set Contract-level URI
+    function setContractURI(string memory contractURI_) external onlyOwner {
+        _contractURI = contractURI_;
+    }
+
+    // Set Contract-level URI
+    function setBaseURI(string memory baseURI_) external onlyOwner {
+        _tokenBaseURI = baseURI_;
+    }
+
+    function _baseURI() internal view override(ERC721) returns (string memory) {
+        return _tokenBaseURI;
     }
 }
