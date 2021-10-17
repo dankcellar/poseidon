@@ -1,6 +1,6 @@
 const Poseidon = artifacts.require("Poseidon.sol");
 const expectedExceptionPromise = require("./util/expected-exception-promise.js");
-const getTransactionGasUsed = require("./util/get-transaction-cost.js");
+const getTransactionCost = require("./util/get-transaction-cost.js");
 const { toWei, toBN } = web3.utils;
 const zeroAddress = "0x0000000000000000000000000000000000000000";
 
@@ -53,7 +53,7 @@ contract('Poseidon', accounts => {
             assert.strictEqual(ownerOfToken1, alice, "Owner of token 1 should be alice");
             // check token 1 power
             let power = await instance.power(1, {from: owner});
-            assert.strictEqual(power.toString(), "1", "Token 1 should have power 2");
+            assert.strictEqual(power.toString(), "1", "Token 1 should have power 1");
             // mint to bob
             await instance.mint(1, {from: bob, value: fishPrice});
             let ownerOfToken2 = await instance.ownerOf(2, {from: owner});
@@ -107,7 +107,7 @@ contract('Poseidon', accounts => {
                 return instance.mint(2, {from: alice, value: "159999999999999999"});
             });
         });
-        // it("should fail when trying to mint more than max supply (needs mint public to be set to 10)", async function() {
+        // it("should not exceed max supply (needs mint public to be set to 10)", async function() {
         //     for (let i = 0; i < 8; i++) {
         //         await instance.mint(1, {from: alice, value: fishPrice});
         //     }
@@ -128,11 +128,81 @@ contract('Poseidon', accounts => {
         // });
     });
 
+    describe("mint private fish", function() {
+        it("should mint one to owner", async function() {
+            let txObj1 = await instance.mintPrivate([owner], {from: owner});
+            assert.strictEqual(txObj1.logs.length, 1, "1 event should be emitted");
+            let args = txObj1.logs[0].args;
+            assert.strictEqual(args["from"], zeroAddress, "Token should come from zeroAddress");
+            assert.strictEqual(args["to"], owner, "Token should go to owner");
+            assert.strictEqual(args["tokenId"].toString(), "1", "First token minted should be tokenId 1");
+            // check token 1 owner
+            let ownerOfToken1 = await instance.ownerOf(1, {from: owner});
+            assert.strictEqual(ownerOfToken1, owner, "Owner of token 1 should be owner");
+            // check token 1 power
+            let power = await instance.power(1, {from: owner});
+            assert.strictEqual(power.toString(), "1", "Token 1 should have power 1");
+        });
+        it("should mint many to collaborators", async function() {
+            let txObj1 = await instance.mintPrivate([alice, bob], {from: owner});
+            assert.strictEqual(txObj1.logs.length, 2, "2 event should be emitted");
+            // check tokens owner
+            let ownerOfToken1 = await instance.ownerOf(1, {from: owner});
+            let ownerOfToken2 = await instance.ownerOf(2, {from: owner});
+            assert.strictEqual(ownerOfToken1, alice, "Owner of token 1 should be alice");
+            assert.strictEqual(ownerOfToken2, bob, "Owner of token 1 should be bob");
+            // check tokens power
+            let power1 = await instance.power(1, {from: owner});
+            let power2 = await instance.power(2, {from: owner});
+            assert.strictEqual(power1.toString(), "1", "Token 1 should have power 1");
+            assert.strictEqual(power2.toString(), "1", "Token 2 should have power 1");
+        });
+        it("should not let alice mint", async function() {
+            await expectedExceptionPromise(function() {
+                return instance.mintPrivate([alice], {from: alice});
+            });
+        });
+        // it("should not exceed max supply (needs mint private to be set to 10)", async function() {
+        //     await instance.mintPrivate([owner, owner, owner, owner, owner, owner, owner, owner], {from: owner});
+        //     await expectedExceptionPromise(function() {
+        //         return instance.mintPrivate([owner, owner, owner], {from: owner});
+        //     });
+        //     await instance.mintPrivate([owner], {from: owner});
+        //     await expectedExceptionPromise(function() {
+        //         return instance.mintPrivate([owner, owner], {from: owner});
+        //     });
+        //     await instance.mintPrivate([owner], {from: owner});
+        //     await expectedExceptionPromise(function() {
+        //         return instance.mintPrivate([owner], {from: owner});
+        //     });
+        //     await expectedExceptionPromise(function() {
+        //         return instance.mintPrivate([owner, owner], {from: owner});
+        //     });
+        //     await instance.mint(1, {from: alice, value: fishPrice});
+        // });
+    });
+
+    describe("withdraw", function() {
+        it("owner should withdraw correctly", async function() {
+            await instance.mint(1, {from: alice, value: fishPrice});
+            let ownerBalanceBN = toBN(await web3.eth.getBalance(owner));
+            let txObj = await instance.withdraw({from: owner});
+            let txCostBN = toBN(await getTransactionCost(txObj));
+            let newBalanceCalculation = ownerBalanceBN.add(new web3.utils.BN(fishPrice));
+            let newOwnerBalanceBN = toBN(await web3.eth.getBalance(owner));
+            console.log(newBalanceCalculation.toString());
+            console.log(newOwnerBalanceBN.toString());
+            assert.strictEqual(newOwnerBalanceBN.toString(), newBalanceCalculation.toString(), "Owner did not receive the funds");
+        });
+        it("alice cannot withdraw", async function() {
+            await instance.mint(1, {from: alice, value: fishPrice});
+            await expectedExceptionPromise(function() {
+                return instance.withdraw({from: alice});
+            });
+        });
+    });
 
     /*
-    mint private to many users
-    mint would exceed supply in private
-
     hunt from private mints
 
     starting block works
@@ -144,18 +214,6 @@ contract('Poseidon', accounts => {
 
     base uri works
      */
-
-    describe("mint private fish", function() {
-        it("should not let alice mint", async function() {
-            await expectedExceptionPromise(function() {
-                return instance.mintPrivate([alice], {from: alice});
-            });
-        });
-    });
-
-    describe("withdraw", function() {
-
-    });
 
     describe("token uri", function() {
         it("should return the correct token uri for tokens 1 and 2", async function() {
