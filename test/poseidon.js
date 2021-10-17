@@ -1,6 +1,5 @@
 const Poseidon = artifacts.require("Poseidon.sol");
 const expectedExceptionPromise = require("./util/expected-exception-promise.js");
-const getTransactionCost = require("./util/get-transaction-cost.js");
 const { toWei, toBN } = web3.utils;
 const zeroAddress = "0x0000000000000000000000000000000000000000";
 
@@ -187,11 +186,12 @@ contract('Poseidon', accounts => {
             await instance.mint(1, {from: alice, value: fishPrice});
             let ownerBalanceBN = toBN(await web3.eth.getBalance(owner));
             let txObj = await instance.withdraw({from: owner});
-            let txCostBN = toBN(await getTransactionCost(txObj));
-            let newBalanceCalculation = ownerBalanceBN.add(new web3.utils.BN(fishPrice));
+            let gasUsed = web3.utils.toBN(txObj.receipt.gasUsed);
+            let tx = await web3.eth.getTransaction(txObj.tx);
+            let gasPrice = web3.utils.toBN(tx.gasPrice);
+            let txCostBN = gasPrice.mul(gasUsed);
+            let newBalanceCalculation = ownerBalanceBN.add(new web3.utils.BN(fishPrice)).sub(txCostBN);
             let newOwnerBalanceBN = toBN(await web3.eth.getBalance(owner));
-            console.log(newBalanceCalculation.toString());
-            console.log(newOwnerBalanceBN.toString());
             assert.strictEqual(newOwnerBalanceBN.toString(), newBalanceCalculation.toString(), "Owner did not receive the funds");
         });
         it("alice cannot withdraw", async function() {
@@ -202,18 +202,40 @@ contract('Poseidon', accounts => {
         });
     });
 
-    /*
-    hunt from private mints
+    describe("starting block", function() {
+        it("should not mint if the starting block is above current block", async function() {
+            await instance.setStartingBlock(999999999, {from: owner});
+            let startingBlock = await instance.startingBlock({from: owner});
+            assert.strictEqual(startingBlock.toString(), "999999999", "StartingBlock should be 999999999");
+            await expectedExceptionPromise(function() {
+                return instance.mint(1, {from: alice, value: fishPrice});
+            });
+        });
+        it("should mint if the starting block is below current block", async function() {
+            await instance.setStartingBlock(1, {from: owner});
+            let startingBlock = await instance.startingBlock({from: owner});
+            assert.strictEqual(startingBlock.toString(), "1", "StartingBlock should be 1");
+            await instance.mint(1, {from: alice, value: fishPrice});
+        });
+        it("should not let alice change starting block", async function() {
+            await expectedExceptionPromise(function() {
+                return instance.setStartingBlock(999999999, {from: alice});
+            });
+        });
+    });
 
-    starting block works
-
-    withdraw works
-    withdraw only from owner
-
-    contract uri works
-
-    base uri works
-     */
+    describe("contract uri", function() {
+        it("should change contract uri", async function() {
+            await instance.setContractURI("https://contracturi123.com", {from: owner});
+            let contractUri = await instance.contractURI({from: alice});
+            assert.strictEqual(contractUri, "https://contracturi123.com", "Contract URI should be https://contracturi123.com");
+        });
+        it("should not let alice change contract uri", async function() {
+            await expectedExceptionPromise(function() {
+                return instance.setContractURI("https://contracturi123.com", {from: alice});
+            });
+        });
+    });
 
     describe("token uri", function() {
         it("should return the correct token uri for tokens 1 and 2", async function() {
@@ -223,12 +245,25 @@ contract('Poseidon', accounts => {
             assert.strictEqual(r1, "https://poseidonnft.eth.link/api/metadata/1", "TokenURI for token 1 is not correct");
             assert.strictEqual(r2, "https://poseidonnft.eth.link/api/metadata/2", "TokenURI for token 2 is not correct");
         });
+        it("should change base uri", async function() {
+            await instance.setBaseURI("https://baseuri123.com/", {from: owner});
+            let startingBlock = await instance.startingBlock({from: owner});
+            await instance.mint(2, {from: alice, value: fishPrice*2});
+            let r1 = await instance.tokenURI(1, {from: owner});
+            let r2 = await instance.tokenURI(2, {from: owner});
+            assert.strictEqual(r1, "https://baseuri123.com/1", "TokenURI for token 1 is not correct");
+            assert.strictEqual(r2, "https://baseuri123.com/2", "TokenURI for token 2 is not correct");
+        });
+        it("should not let alice change base uri", async function() {
+            await expectedExceptionPromise(function() {
+                return instance.setBaseURI("https://baseuri123.com/", {from: alice});
+            });
+        });
     });
 
     describe("hunt", function() {
         it("should mint two fishes and let alice hunt them", async function() {
-            await instance.mint(1, {from: alice, value: fishPrice});
-            await instance.mint(1, {from: alice, value: fishPrice});
+            await instance.mint(2, {from: alice, value: fishPrice*2});
             let txObj = await instance.hunt(1, 2, {from: alice});
             assert.strictEqual(txObj.logs.length, 3, "3 events should be emitted");
             let args = txObj.logs[2].args;
@@ -259,6 +294,20 @@ contract('Poseidon', accounts => {
             await instance.hunt(3, 1, {from: alice});
             let power2 = await instance.power(3, {from: bob});
             assert.strictEqual(power2.toString(), "5", "Token 3 should have power 5");
+        });
+        it("should private mint and hunt between them", async function() {
+            await instance.mintPrivate([alice, alice], {from: owner});
+            await instance.hunt(1, 2, {from: alice});
+            // check token owners
+            let ownerOfToken1 = await instance.ownerOf(1, {from: owner});
+            assert.strictEqual(ownerOfToken1, alice, "Owner of token 1 should be alice");
+            await expectedExceptionPromise(function() {
+                // second token should be burned
+                return instance.ownerOf(2, {from: owner});
+            });
+            // check token 1 power
+            let power = await instance.power(1, {from: bob});
+            assert.strictEqual(power.toString(), "2", "Token 1 should have power 2");
         });
         it("should not hunt bigger fish", async function() {
             await instance.mint(3, {from: alice, value: fishPrice*3});
