@@ -9,6 +9,7 @@ import LastHunts from "./LastHunts";
 import Messages from "../components/Messages";
 import {addErrorMessage} from "../utils/messages";
 import Fish from "./Fish";
+import Admin from "./Admin";
 
 export default function App() {
     const [contract, setContract] = useState({});  // also used to know if connected
@@ -69,6 +70,7 @@ export default function App() {
                         <Route path="/my-fish" component={MyFish}/>
                         <Route path="/fish/:id" component={Fish}/>
                         <Route path="/last-hunts" component={LastHunts}/>
+                        <Route path="/admin" component={Admin}/>
                         <Route path="/" component={Home}/>
                     </Switch>
                 </BrowserRouter>

@@ -10,10 +10,10 @@
 //                                                                               by Amperlabs
 
 pragma solidity 0.8.6;
-import "openzeppelin-solidity/contracts/token/ERC721/ERC721.sol";
+import "openzeppelin-solidity/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 
-contract Poseidon is ERC721, Ownable {
+contract Poseidon is ERC721Enumerable, Ownable {
     uint256 public constant MINT_PUBLIC = 9580;
     uint256 public constant MINT_PRIVATE = 420;
     uint256 public constant MINT_PRICE = 0.08 ether;

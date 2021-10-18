@@ -11,10 +11,9 @@ export default function Mint({myFish}) {
         try {
             const account = await appContext.enableMetamask();
             const contract = appContext.contract;
-            console.log(mintAmount);
-            await contract.methods.mint(mintAmount).send({from: account});
+            const totalPrice = mintAmount*0.08*1000000000000000000;
+            await contract.methods.mint(mintAmount).send({from: account, value: totalPrice});
             addMessage("Minted successfully, awaiting confirmation");
-            myFish();
         } catch (e) {
             addErrorMessage(e.message);
         }

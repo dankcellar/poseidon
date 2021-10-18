@@ -10,6 +10,7 @@ export default function Home() {
             <p><NavLink to="/my-fish">My fish</NavLink></p>
             <p><NavLink to="/fish/1">Check fish #1</NavLink></p>
             <p><NavLink to="/last-hunts">Last hunts</NavLink></p>
+            <p><NavLink to="/admin">Admin</NavLink></p>
             <div><Mint/></div>
         </div>
     );

@@ -27,7 +27,7 @@ export default function MyFish() {
         let newFish = [];
         for (let i = 0; i < balance; i++) {
             const token = await contract.methods.tokenOfOwnerByIndex(account, i).call();
-            const tokenPower = await contract.methods.tokenPower(token).call();
+            const tokenPower = await contract.methods.power(token).call();
             newFish.push({
                 "id": token,
                 "power": tokenPower,

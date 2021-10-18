@@ -22,12 +22,12 @@ export default function Fish(props) {
             return;
         }
         // TODO check if token does not exist
-        const tokenPower = await contract.methods.power(id).call();
-        const tokenOwner = await contract.methods.ownerOf(id).call();
+        const power = await contract.methods.power(id).call();
+        const owner = await contract.methods.ownerOf(id).call();
         let currentFish = {
             "id": id,
-            "power": tokenPower,
-            "owner": tokenOwner,
+            "power": power,
+            "owner": owner,
         };
         setFish(currentFish);
     }
@@ -43,7 +43,6 @@ export default function Fish(props) {
         for (let i = 0; i < balance; i++) {
             const token = await contract.methods.tokenOfOwnerByIndex(account, i).call();
             const tokenPower = await contract.methods.power(token).call();
-            console.log(token, fish["id"], tokenPower, fish["power"]);
             if (token !== fish["id"] && tokenPower <= fish["power"]) {
                 currentPreys.push({
                     "id": token,
