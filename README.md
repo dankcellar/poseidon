@@ -1,4 +1,4 @@
-[![Build Status](https://app.travis-ci.com/amper-lab/poseidon.svg)](https://app.travis-ci.com/github/amper-lab/poseidon)
+[![Build Status](https://app.travis-ci.com/amperlabs/poseidon.svg)](https://app.travis-ci.com/github/amperlabs/poseidon)
 
 # Poseidon
 
