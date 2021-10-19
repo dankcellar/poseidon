@@ -21,15 +21,7 @@ module.exports = {
         development: {
             host: "localhost",
             port: 8545,
-            gas: 5000000,
             network_id: "*",
-        },
-        rinkeby: {
-            provider: function () {
-                return new HDWalletProvider(MNEMONIC, "https://rinkeby.infura.io/v3/" + NODE_API_KEY);
-            },
-            gasPrice: 1010000000,
-            network_id: 4,
         },
         live: {
             provider: function () {
@@ -37,6 +29,20 @@ module.exports = {
             },
             gasPrice: 63000000000,
             network_id: 1,
+        },
+        ropsten: {
+            provider: function () {
+                return new HDWalletProvider(MNEMONIC, "https://ropsten.infura.io/v3/" + NODE_API_KEY);
+            },
+            gasPrice: 2000000000,  // 2 gwei
+            network_id: 3,
+        },
+        rinkeby: {
+            provider: function () {
+                return new HDWalletProvider(MNEMONIC, "https://rinkeby.infura.io/v3/" + NODE_API_KEY);
+            },
+            gasPrice: 1010000000,
+            network_id: 4,
         },
     },
     compilers: {

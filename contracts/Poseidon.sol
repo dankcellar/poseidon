@@ -14,6 +14,17 @@ import "openzeppelin-solidity/contracts/token/ERC721/extensions/ERC721Enumerable
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/utils/Strings.sol";
 
+/**
+ * Poseidon is an ERC721 contract in which each token has a starting power of 1,
+ * and each token can increase its own power by hunting another token.
+ *
+ * An owner of at least two tokens can decide to hunt, by choosing one token to
+ * become the predator and another token to become the prey. When hunting, the
+ * predator token power becomes the sum of the power of both tokens and the prey
+ * token is burned.
+ *
+ * Each token art evolves when its power increases to certain thresholds.
+ */
 contract Poseidon is ERC721Enumerable, Ownable {
     using Strings for uint256;
 
@@ -65,6 +76,7 @@ contract Poseidon is ERC721Enumerable, Ownable {
 
     // Hunt burns a token and adds it's power to another token
     function hunt(uint256 _predator, uint256 _prey) external {
+        require(_predator != _prey, "MUST_BE_DIFFERENT");
         require(ownerOf(_predator) == _msgSender(), "MUST_OWN_PREDATOR");
         require(ownerOf(_prey) == _msgSender(), "MUST_OWN_PREY");
         require(_power[_predator] >= _power[_prey], "PREY_MORE_POWER_THAN_PREDATOR");

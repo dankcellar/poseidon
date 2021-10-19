@@ -1,5 +1,5 @@
 const Poseidon = artifacts.require("Poseidon.sol");
 
-module.exports = async function(deployer, network, accounts) {
-    return deployer.deploy(Poseidon, {gas: 4272847});
+module.exports = async function (deployer) {
+    deployer.deploy(Poseidon, {gas: 5000000});
 };

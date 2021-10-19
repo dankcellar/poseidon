@@ -359,6 +359,12 @@ contract('Poseidon', accounts => {
                 return instance.hunt(1, 2, {from: alice});
             });
         });
+        it("shoult not hunt if prey and predator are the same", async function() {
+            await instance.mint(1, {from: alice, value: fishPrice});
+            await expectedExceptionPromise(function() {
+                return instance.hunt(1, 1, {from: alice});
+            });
+        });
         it("should not hunt other people fish", async function() {
             await instance.mint(1, {from: alice, value: fishPrice});
             await instance.mint(1, {from: bob, value: fishPrice});
