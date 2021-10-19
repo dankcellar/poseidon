@@ -12,8 +12,11 @@
 pragma solidity 0.8.6;
 import "openzeppelin-solidity/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
+import "openzeppelin-solidity/contracts/utils/Strings.sol";
 
 contract Poseidon is ERC721Enumerable, Ownable {
+    using Strings for uint256;
+
     uint256 public constant MINT_PUBLIC = 9580;
     uint256 public constant MINT_PRIVATE = 420;
     uint256 public constant MINT_PRICE = 0.08 ether;
@@ -23,7 +26,7 @@ contract Poseidon is ERC721Enumerable, Ownable {
     uint256 public startingBlock = 999999999;
 
     string private _contractURI;
-    string private _tokenBaseURI = "https://poseidonnft.eth.link/api/metadata/";
+    string private _tokenBaseURI;
 
     uint256 private _currentTokenId = 0;
     uint256 private _publicMinted = 0;
@@ -71,8 +74,33 @@ contract Poseidon is ERC721Enumerable, Ownable {
     }
 
     // View the power of a token
-    function power(uint256 _token) public view returns (uint256) {
-        return _power[_token];
+    function power(uint256 _tokenId) public view returns (uint256) {
+        return _power[_tokenId];
+    }
+
+    // Returns the type based on it's power, which can be fish, shark, whale or kraken
+    function tokenType(uint256 _tokenId) public view returns (string memory) {
+        require(_exists(_tokenId), "MUST_EXIST");
+        uint256 power_ = power(_tokenId);
+        if (power_ >= 1000) {
+            return "kraken";
+        }
+        if (power_ >= 100) {
+            return "whale";
+        }
+        if (power_ >= 10) {
+            return "shark";
+        }
+        return "fish";
+    }
+
+    // Override tokenURI to add the type
+    function tokenURI(uint256 tokenId) public view virtual override(ERC721) returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        string memory baseURI = _baseURI();
+        string memory type_ = tokenType(tokenId);
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, type_, "/", tokenId.toString())) : "";
     }
 
     // Set starting block for the sale

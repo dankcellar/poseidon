@@ -237,26 +237,68 @@ contract('Poseidon', accounts => {
         });
     });
 
-    describe("token uri", function() {
-        it("should return the correct token uri for tokens 1 and 2", async function() {
-            await instance.mint(2, {from: alice, value: fishPrice*2});
-            let r1 = await instance.tokenURI(1, {from: owner});
-            let r2 = await instance.tokenURI(2, {from: owner});
-            assert.strictEqual(r1, "https://poseidonnft.eth.link/api/metadata/1", "TokenURI for token 1 is not correct");
-            assert.strictEqual(r2, "https://poseidonnft.eth.link/api/metadata/2", "TokenURI for token 2 is not correct");
+    describe("token type", function() {
+        it("should return the correct token type", async function() {
+            await instance.mint(10, {from: alice, value: fishPrice*10});
+            let r1 = await instance.tokenType(1, {from: owner});
+            assert.strictEqual(r1, "fish", "Type should be fish");
+            await instance.hunt(1, 2, {from: alice});
+            await instance.hunt(1, 3, {from: alice});
+            await instance.hunt(1, 4, {from: alice});
+            await instance.hunt(1, 5, {from: alice});
+            await instance.hunt(1, 6, {from: alice});
+            await instance.hunt(1, 7, {from: alice});
+            await instance.hunt(1, 8, {from: alice});
+            await instance.hunt(1, 9, {from: alice});
+            await instance.hunt(1, 10, {from: alice});
+            let r2 = await instance.tokenType(1, {from: owner});
+            assert.strictEqual(r2, "shark", "Type should be shark");
         });
-        it("should change base uri", async function() {
+        it("should revert if token does not exist", async function() {
+            await expectedExceptionPromise(function() {
+                return instance.tokenType(1, {from: owner});
+            });
+        });
+    });
+
+    describe("token uri", function() {
+        it("should change base uri and return correct token", async function() {
             await instance.setBaseURI("https://baseuri123.com/", {from: owner});
-            let startingBlock = await instance.startingBlock({from: owner});
             await instance.mint(2, {from: alice, value: fishPrice*2});
             let r1 = await instance.tokenURI(1, {from: owner});
             let r2 = await instance.tokenURI(2, {from: owner});
-            assert.strictEqual(r1, "https://baseuri123.com/1", "TokenURI for token 1 is not correct");
-            assert.strictEqual(r2, "https://baseuri123.com/2", "TokenURI for token 2 is not correct");
+            assert.strictEqual(r1, "https://baseuri123.com/fish/1", "TokenURI for token 1 is not correct");
+            assert.strictEqual(r2, "https://baseuri123.com/fish/2", "TokenURI for token 2 is not correct");
+        });
+        it("should return correct base uri when token is a shark", async function() {
+            await instance.setBaseURI("https://baseuri123.com/", {from: owner});
+            await instance.mint(10, {from: alice, value: fishPrice*10});
+            await instance.hunt(1, 2, {from: alice});
+            await instance.hunt(1, 3, {from: alice});
+            await instance.hunt(1, 4, {from: alice});
+            await instance.hunt(1, 5, {from: alice});
+            await instance.hunt(1, 6, {from: alice});
+            await instance.hunt(1, 7, {from: alice});
+            await instance.hunt(1, 8, {from: alice});
+            await instance.hunt(1, 9, {from: alice});
+            await instance.hunt(1, 10, {from: alice});
+            let r = await instance.tokenURI(1, {from: owner});
+            assert.strictEqual(r, "https://baseuri123.com/shark/1", "TokenURI for token 1 is not correct");
         });
         it("should not let alice change base uri", async function() {
             await expectedExceptionPromise(function() {
                 return instance.setBaseURI("https://baseuri123.com/", {from: alice});
+            });
+        });
+        it("should return empty if no base uri", async function() {
+            await instance.mint(1, {from: alice, value: fishPrice});
+            let r = await instance.tokenURI(1, {from: owner});
+            assert.strictEqual(r, "", "TokenURI is empty because no base uri");
+        });
+        it("should revert if token does not exist", async function() {
+            await instance.setBaseURI("https://baseuri123.com/", {from: owner});
+            await expectedExceptionPromise(function() {
+                return instance.tokenURI(1, {from: owner});
             });
         });
     });
