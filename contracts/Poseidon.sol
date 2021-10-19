@@ -32,13 +32,15 @@ contract Poseidon is ERC721Enumerable, Ownable {
     uint256 public constant MINT_PRIVATE = 420;
     uint256 public constant MINT_PRICE = 0.08 ether;
     uint256 public constant MINT_MAX_TX = 10;
-    string public provenanceHash; // sha256 string of concatenation of sha256 strings of ordered art images
+
+    // sha256(sha256(sha256fish1.sha256shark1.sha256whale1.sha256kraken1)...)
+    string public constant provenanceHash = "";
+
+    bool public IpfsURI = false;
+    string private _tokenBaseURI;
+    string private _contractURI;
 
     uint256 public startingBlock = 999999999;
-
-    string private _contractURI;
-    string private _tokenBaseURI;
-
     uint256 private _currentTokenId = 0;
     uint256 private _publicMinted = 0;
     uint256 private _privateMinted = 0;
@@ -109,10 +111,14 @@ contract Poseidon is ERC721Enumerable, Ownable {
     // Override tokenURI to add the type
     function tokenURI(uint256 tokenId) public view virtual override(ERC721) returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-
         string memory baseURI = _baseURI();
-        string memory type_ = tokenType(tokenId);
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, type_, "/", tokenId.toString())) : "";
+
+        if (IpfsURI) {
+            string memory type_ = tokenType(tokenId);
+            return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), "/", type_)) : "";
+        }
+        uint256 power_ = power(tokenId);
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), "/", power_.toString())) : "";
     }
 
     // Set starting block for the sale
@@ -135,11 +141,13 @@ contract Poseidon is ERC721Enumerable, Ownable {
         _contractURI = contractURI_;
     }
 
-    // Set Contract-level URI
-    function setBaseURI(string memory baseURI_) external onlyOwner {
+    // Set Contract-level URI. IPFS URI allows completely decentralized metadata without the power attribute
+    function setBaseURI(string memory baseURI_, bool _ipfs) external onlyOwner {
         _tokenBaseURI = baseURI_;
+        IpfsURI = _ipfs;
     }
 
+    // Overrides _baseURI to be a custom URI
     function _baseURI() internal view override(ERC721) returns (string memory) {
         return _tokenBaseURI;
     }

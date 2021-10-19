@@ -263,15 +263,25 @@ contract('Poseidon', accounts => {
 
     describe("token uri", function() {
         it("should change base uri and return correct token", async function() {
-            await instance.setBaseURI("https://baseuri123.com/", {from: owner});
+            await instance.setBaseURI("https://baseuri123.com/", true, {from: owner});
             await instance.mint(2, {from: alice, value: fishPrice*2});
             let r1 = await instance.tokenURI(1, {from: owner});
             let r2 = await instance.tokenURI(2, {from: owner});
-            assert.strictEqual(r1, "https://baseuri123.com/fish/1", "TokenURI for token 1 is not correct");
-            assert.strictEqual(r2, "https://baseuri123.com/fish/2", "TokenURI for token 2 is not correct");
+            let ipfsUri = await instance.IpfsURI({from: alice});
+            assert.strictEqual(r1, "https://baseuri123.com/1/fish", "TokenURI for token 1 is not correct");
+            assert.strictEqual(r2, "https://baseuri123.com/2/fish", "TokenURI for token 2 is not correct");
+            assert.strictEqual(ipfsUri, true, "Ipfs URI should be false");
+            // ipfs
+            await instance.setBaseURI("https://baseuri123.com/", false, {from: owner});
+            let r12 = await instance.tokenURI(1, {from: owner});
+            let r22 = await instance.tokenURI(2, {from: owner});
+            let ipfsUri2 = await instance.IpfsURI({from: alice});
+            assert.strictEqual(r12, "https://baseuri123.com/1/1", "TokenURI for token 1 is not correct");
+            assert.strictEqual(r22, "https://baseuri123.com/2/1", "TokenURI for token 2 is not correct");
+            assert.strictEqual(ipfsUri2, false, "Ipfs URI should be true");
         });
         it("should return correct base uri when token is a shark", async function() {
-            await instance.setBaseURI("https://baseuri123.com/", {from: owner});
+            await instance.setBaseURI("https://baseuri123.com/", true, {from: owner});
             await instance.mint(10, {from: alice, value: fishPrice*10});
             await instance.hunt(1, 2, {from: alice});
             await instance.hunt(1, 3, {from: alice});
@@ -283,11 +293,15 @@ contract('Poseidon', accounts => {
             await instance.hunt(1, 9, {from: alice});
             await instance.hunt(1, 10, {from: alice});
             let r = await instance.tokenURI(1, {from: owner});
-            assert.strictEqual(r, "https://baseuri123.com/shark/1", "TokenURI for token 1 is not correct");
+            assert.strictEqual(r, "https://baseuri123.com/1/shark", "TokenURI for token 1 is not correct");
+            // ipfs
+            await instance.setBaseURI("https://baseuri123.com/", false, {from: owner});
+            let r2 = await instance.tokenURI(1, {from: owner});
+            assert.strictEqual(r2, "https://baseuri123.com/1/10", "TokenURI for token 1 is not correct");
         });
         it("should not let alice change base uri", async function() {
             await expectedExceptionPromise(function() {
-                return instance.setBaseURI("https://baseuri123.com/", {from: alice});
+                return instance.setBaseURI("https://baseuri123.com/", false, {from: alice});
             });
         });
         it("should return empty if no base uri", async function() {
@@ -296,7 +310,7 @@ contract('Poseidon', accounts => {
             assert.strictEqual(r, "", "TokenURI is empty because no base uri");
         });
         it("should revert if token does not exist", async function() {
-            await instance.setBaseURI("https://baseuri123.com/", {from: owner});
+            await instance.setBaseURI("https://baseuri123.com/", false, {from: owner});
             await expectedExceptionPromise(function() {
                 return instance.tokenURI(1, {from: owner});
             });
