@@ -13,3 +13,7 @@ dist/
 
 # npm
 package-lock.json
+
+# ifps
+ipfs/
+!ipfs/.gitkeep

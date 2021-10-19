@@ -1,3 +1,4 @@
+require('dotenv').config();
 const path = require("path");
 const HDWalletProvider = require("truffle-hdwallet-provider");
 
@@ -27,15 +28,14 @@ module.exports = {
             provider: function () {
                 return new HDWalletProvider(MNEMONIC, "https://rinkeby.infura.io/v3/" + NODE_API_KEY);
             },
-            gas: 5000000,
+            gasPrice: 1010000000,
             network_id: 4,
         },
         live: {
             provider: function () {
                 return new HDWalletProvider(MNEMONIC, "https://mainnet.infura.io/v3/" + NODE_API_KEY);
             },
-            gas: 5000000,
-            gasPrice: 5000000000,
+            gasPrice: 63000000000,
             network_id: 1,
         },
     },
