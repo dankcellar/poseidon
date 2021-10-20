@@ -3,7 +3,12 @@ module.exports = {
         {
             value: "",
             p: 100,
-            source: []
+            source: {
+                fish: [],
+                shark: [],
+                whale: [],
+                kraken: []
+            }
         },
         {
             value: "Ballon",
@@ -96,7 +101,12 @@ module.exports = {
         {
             value: "",
             p: 100,
-            source: []
+            source: {
+                fish: [],
+                shark: [],
+                whale: [],
+                kraken: []
+            }
         },
         {
             value: "Fiscal",
@@ -123,7 +133,12 @@ module.exports = {
         {
             value: "",
             p: 100,
-            source: []
+            source: {
+                fish: [],
+                shark: [],
+                whale: [],
+                kraken: []
+            }
         },
         {
             value: "Drill",

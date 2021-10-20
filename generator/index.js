@@ -1,5 +1,7 @@
 const fs = require('fs');
 const { createCanvas, loadImage } = require('canvas');
+const hashIPFS = require('ipfs-only-hash')
+const crypto = require('crypto');
 
 const sourceData = require("./source-data");
 const contract = require("./contract");
@@ -11,21 +13,18 @@ const tokenTypes = ["fish", "shark", "whale", "kraken"];
 const imageSize = 350;
 
 function prepareDirs() {
-    fs.rmdirSync("ipfs/metadata", {recursive: true});
-    fs.rmdirSync("ipfs/images", {recursive: true});
-    fs.rmdirSync("ipfs/documents", {recursive: true});
-    fs.mkdirSync("ipfs/metadata");
-    fs.mkdirSync("ipfs/images");
-    fs.mkdirSync("ipfs/documents");
+    fs.rmdirSync("ipfs", {recursive: true});
+    fs.mkdirSync("ipfs");
+    fs.mkdirSync("ipfs/tokens");
     for (let i = 1; i <= tokenAmount; i++) {
-        fs.mkdirSync("ipfs/metadata/" + i);
+        fs.mkdirSync("ipfs/tokens/" + i);
     }
     console.log("IPFS directories prepared");
 }
 
 function generateContractJson(_contract) {
     const contractJSON = JSON.stringify(_contract)
-    fs.writeFileSync("ipfs/documents/contract.json", contractJSON);
+    fs.writeFileSync("ipfs/contract.json", contractJSON);
     console.log("Contract JSON created, upload the single file at ipfs/documents/contract.json");
 }
 
@@ -59,13 +58,14 @@ async function generateAllTokens(data) {
         return 0;
     }
     async function generateImage(imagesArray) {
+        imagesArray.sort(compareByOrder);
         const canvas = createCanvas(350, 350);
         const ctx = canvas.getContext('2d');
         for (let i = 0; i < imagesArray.length; i++) {
             const img = await loadImage("source/" + imagesArray[i].image);
             ctx.drawImage(img, 0, 0, imageSize, imageSize);
         }
-        return canvas.toBuffer('image/png', {compressionLevel: 9, filters: canvas.PNG_FILTER_NONE });
+        return canvas.toBuffer("image/png", {compressionLevel: 9, filters: canvas.PNG_ALL_FILTERS });
     }
 
     // find max p for each type
@@ -76,23 +76,32 @@ async function generateAllTokens(data) {
         // pick the random attributes
         let randomPicks = {};
         dataTypes.forEach(e => {randomPicks[e] = randomPick(e, data, maxP)});
-        // create an image array and order it
-        let imagesArray = [];
-        dataTypes.forEach(e => {randomPicks[e].source.forEach(m => imagesArray.push(m))});
-        imagesArray.sort(compareByOrder);
-        // generate images
-        const imgBuffer = await generateImage(imagesArray);
-        fs.writeFileSync("ipfs/images/" + tokenId + ".png", imgBuffer);
-        // lossless compression
-        // generate image sha256 and ipfs cid
-        // generate metadata
-        let metaData = {
-            name: tokenName + " #" + tokenId,
-            description: "Placeholder",
-            image: "",
-            external_url: tokenExternalBaseUrl + tokenId,
-            attributes: [],
-        };
+        // we need to generate an image for each tokenTypes
+        for (let i = 0; i < tokenTypes.length; i++) {
+            // create an image array
+            let imagesArray = [];
+            dataTypes.forEach(e => {
+                randomPicks[e].source[tokenTypes[i]].forEach(m => imagesArray.push(m))
+            });
+            // generate images
+            const imgBuffer = await generateImage(imagesArray);
+            const hashCID = await hashIPFS.of(imgBuffer);
+            const hash256 = crypto.createHash("md5").update(imgBuffer).digest('hex');
+            const filename = "ipfs/tokens/" + tokenId +  "/" + tokenTypes[i] + ".png";
+            fs.writeFileSync(filename, imgBuffer);
+            // generate metadata
+            let metaData = {
+                name: tokenName + " #" + tokenId,  // ~1
+                description: tokenName + " #" + tokenId,
+                image: "ipfs://" + hashCID,
+                external_url: tokenExternalBaseUrl + tokenId,
+                attributes: [],
+            };
+            // TODO perhaps put different attribute name in evolutions
+        }
+
+
+        console.log("Token " + tokenId + " generated");
     }
     // create a file with data.json with the md5 and other output
 }
