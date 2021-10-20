@@ -14,6 +14,8 @@ dist/
 # npm
 package-lock.json
 
-# ifps
-ipfs/
-!ipfs/.gitkeep
+# generator
+/generator/ipfs/
+!/generator/ipfs/.gitkeep
+/generator/source/
+!/generator/source/.gitkeep
