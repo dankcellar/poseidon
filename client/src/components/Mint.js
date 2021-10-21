@@ -2,16 +2,18 @@ import React, {useContext, useState} from "react";
 import {addErrorMessage, addMessage} from "../utils/messages";
 import AppContext from "../pages/AppContext";
 import Select from "./Select";
+import {useWeb3React} from "@web3-react/core";
 
 export default function Mint() {
-    const appContext = useContext(AppContext);
     const [mintAmount, setMintAmount] = useState(1);
+    const {poseidon} = useContext(AppContext);
+    const {account} = useWeb3React();
 
     const mint = async () => {
+        if (!poseidon) return;
         try {
-            const account = await appContext.enableMetamask();
             const totalPrice = mintAmount*0.08*1000000000000000000;
-            await appContext.contract.methods.mint(mintAmount).send({from: account, value: totalPrice});
+            await poseidon.methods.mint(mintAmount).send({from: account, value: totalPrice});
             addMessage("Minted successfully, awaiting confirmation");
         } catch (e) {
             addErrorMessage(e.message);

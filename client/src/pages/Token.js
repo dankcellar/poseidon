@@ -2,30 +2,32 @@ import React, {useContext, useEffect, useState} from "react";
 import {addErrorMessage, addMessage} from "../utils/messages";
 import AppContext from "./AppContext";
 import {Link} from "react-router-dom";
+import {useWeb3React} from "@web3-react/core";
 
 export default function Token(props) {
-    const appContext = useContext(AppContext);
-    const id = props.match.params.id;
-
     const [token, setToken] = useState({});
     const [preys, setPreys] = useState([]);
 
+    const {poseidon} = useContext(AppContext);
+    const {account} = useWeb3React();
+    const tokenId = props.match.params.id;
+
     useEffect(() => {
-        tokenInfo().then(function () {
-            availablePreys().then();
-        });
+        tokenInfo().then();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [appContext.contract]);
+    }, [poseidon]);
+
+    useEffect(() => {
+        availablePreys().then();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [token]);
 
     const tokenInfo = async () => {
-        const contract = appContext.contract;
-        if (Object.keys(contract).length === 0) {
-            return;
-        }
-        const power = await contract.methods.power(id).call();
-        const owner = await contract.methods.ownerOf(id).call();
+        if (!poseidon) return;
+        const power = await poseidon.methods.power(tokenId).call();
+        const owner = await poseidon.methods.ownerOf(tokenId).call();
         const _token = {
-            "id": id,
+            "id": tokenId,
             "power": power,
             "owner": owner,
         };
@@ -33,17 +35,16 @@ export default function Token(props) {
     }
 
     const availablePreys = async () => {
-        const account = await appContext.enableMetamask();
-        const contract = appContext.contract;
-        const balance = await contract.methods.balanceOf(account).call();
+        if (!poseidon) return;
+        const balance = await poseidon.methods.balanceOf(account).call();
         let currentPreys = [];
         for (let i = 0; i < balance; i++) {
-            const tokenId = await contract.methods.tokenOfOwnerByIndex(account, i).call();
-            const tokenPower = await contract.methods.power(tokenId).call();
-            if (tokenId !== token["id"] && tokenPower <= token["power"]) {
+            const tokenId = await poseidon.methods.tokenOfOwnerByIndex(account, i).call();
+            const power = await poseidon.methods.power(tokenId).call();
+            if (tokenId !== token["id"] && power <= token["power"]) {
                 currentPreys.push({
                     "id": tokenId,
-                    "power": tokenPower,
+                    "power": power,
                     "owner": account,
                 });
             }
@@ -52,10 +53,9 @@ export default function Token(props) {
     }
 
     const hunt = async (predator, prey) => {
+        if (!poseidon) return;
         try {
-            const account = await appContext.enableMetamask();
-            const contract = appContext.contract;
-            await contract.methods.hunt(predator, prey).send({from: account});
+            await poseidon.methods.hunt(predator, prey).send({from: account});
             addMessage("Minted successfully, awaiting confirmation");
             await tokenInfo();
             await availablePreys();

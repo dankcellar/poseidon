@@ -1,32 +1,29 @@
 import React, {useContext, useEffect, useState} from "react";
-import SignInMetamask from "../components/SignInMetamask";
-import AppContext from "./AppContext";
 import {Link} from "react-router-dom";
+import {useWeb3React} from "@web3-react/core";
+import AppContext from "./AppContext";
 
 export default function Account() {
     const [tokens, setTokens] = useState([]);
 
-    const appContext = useContext(AppContext);
+    const {account} = useWeb3React();
+    const {poseidon} = useContext(AppContext);
 
     useEffect(() => {
         myTokens().then();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [appContext.contract]);
+    }, [poseidon]);
 
     const myTokens = async () => {
-        const account = appContext.account;
-        const contract = appContext.contract;
-        if (account === "" && Object.keys(contract).length === 0) {
-            return;
-        }
-        const balance = await contract.methods.balanceOf(account).call();
+        if (!poseidon) return;
+        const balance = await poseidon.methods.balanceOf(account).call();
         let newTokens = [];
         for (let i = 0; i < balance; i++) {
-            const token = await contract.methods.tokenOfOwnerByIndex(account, i).call();
-            const tokenPower = await contract.methods.power(token).call();
+            const token = await poseidon.methods.tokenOfOwnerByIndex(account, i).call();
+            const power = await poseidon.methods.power(token).call();
             newTokens.push({
                 "id": token,
-                "power": tokenPower,
+                "power": power,
                 "owner": account,
             })
         }
@@ -34,12 +31,7 @@ export default function Account() {
     }
 
     function renderMyTokens() {
-        const account = appContext.account;
-        if (account === "") {
-            return (
-                <div>You need to be logged in to see your tokens: <SignInMetamask/></div>
-            );
-        }
+        if (!poseidon) return;
         return (
             <div>
                 {

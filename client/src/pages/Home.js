@@ -1,12 +1,28 @@
 import React from "react";
 import Mint from "../components/Mint";
+import {useWeb3React} from "@web3-react/core";
+import {injected} from "../utils/connectors";
 
 export default function Home() {
+    const {active, activate} = useWeb3React();
+
+    async function connect() {
+        try {
+            await activate(injected);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     return (
         <section className="section">
             <div className="container home">
                 <h1>Poseidon</h1>
-                <div><Mint/></div>
+                <div>
+                    {
+                        active ? <Mint/> : <button onClick={connect}>Connect Metamask</button>
+                    }
+                </div>
             </div>
         </section>
     );

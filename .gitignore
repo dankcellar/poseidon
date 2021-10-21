@@ -6,7 +6,7 @@
 build/
 node_modules/
 yarn-error.log
-.env
+/.env
 
 # dist
 dist/

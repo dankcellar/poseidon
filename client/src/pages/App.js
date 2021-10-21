@@ -1,62 +1,34 @@
-import Web3 from 'web3';
 import Poseidon from '../contracts/Poseidon.json';
 import {useEffect, useState} from "react";
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
-import AppContext from "./AppContext";
 import Home from "./Home";
 import Account from "./Account";
 import Messages from "../components/Messages";
 import Token from "./Token";
 import NavBar from "../components/NavBar";
-
-const ContractAddress = "0x2007b5F7f89e68c729073f853fD143bA0d010a93";
-const APIBaseUrl = " http://51.83.43.205:8080/token/";
+import {useWeb3React} from "@web3-react/core";
+import AppContext from "./AppContext";
 
 export default function App() {
-    const [contract, setContract] = useState({});  // also used to know if connected
-    const [account, setAccount] = useState("");  // also to know if metamask accepted connection
+    const [poseidon, setPoseidon] = useState(false);
+    const {library} = useWeb3React();
 
     useEffect(() => {
-        loadWeb3().then();
-    }, []);
+        loadContract().then();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [library]);
 
-    const loadWeb3 = async () => {
-        if (window.ethereum) {
-            window.web3 = new Web3(window.ethereum);
-        } else if (window.web3) {
-            window.web3 = new Web3(window.web3.currentProvider);
+    const loadContract = async () => {
+        if (!!library) {
+            const contract = new library.eth.Contract(Poseidon.abi, process.env.REACT_APP_CONTRACT_ADDRESS);
+            setPoseidon(contract);
+        } else {
+            setPoseidon(false);
         }
-        if (window.web3) {
-            const contract = new window.web3.eth.Contract(Poseidon.abi, ContractAddress);
-            const power = await contract.methods.power(2).call();
-            console.log(power);
-            setContract(contract);
-        }
-    };
-
-    const enableMetamask = async () => {
-        if (!window.web3) {
-            throw new Error("You need to have installed Metamask to do this!");
-        }
-        if (Object.keys(contract).length === 0) {
-            throw new Error("Poseidon contract needs to be deployed to do this.");
-        }
-        if (account === "") {
-            await window.ethereum.send("eth_requestAccounts");
-            const accounts = await window.web3.eth.getAccounts();
-            setAccount(accounts[0]);
-            return accounts[0];
-        }
-        return account;
     };
 
     return (
-        <AppContext.Provider value={{
-            contract: contract,
-            account: account,
-            apiBaseUrl: APIBaseUrl,
-            enableMetamask: enableMetamask,
-        }}>
+        <AppContext.Provider value={{poseidon: poseidon}}>
             <BrowserRouter>
                 <div className="App">
                     <NavBar/>
