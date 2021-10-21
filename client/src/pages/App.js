@@ -4,12 +4,13 @@ import {useEffect, useState} from "react";
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import AppContext from "./AppContext";
 import Home from "./Home";
-import MyFish from "./MyFish";
-import LastHunts from "./LastHunts";
+import Account from "./Account";
 import Messages from "../components/Messages";
-import {addErrorMessage} from "../utils/messages";
-import Fish from "./Fish";
-import Admin from "./Admin";
+import Token from "./Token";
+import NavBar from "../components/NavBar";
+
+const ContractAddress = "0x2007b5F7f89e68c729073f853fD143bA0d010a93";
+const APIBaseUrl = " http://51.83.43.205:8080/token/";
 
 export default function App() {
     const [contract, setContract] = useState({});  // also used to know if connected
@@ -26,19 +27,10 @@ export default function App() {
             window.web3 = new Web3(window.web3.currentProvider);
         }
         if (window.web3) {
-            const networkId = await window.web3.eth.net.getId();
-            const networkData = Poseidon.networks[networkId];
-            if (!networkData) {
-                addErrorMessage("Poseidon contract is not deployed.");
-            }
-            const abi = Poseidon.abi;
-            const address = networkData.address;
-            const contract = new window.web3.eth.Contract(abi, address);
+            const contract = new window.web3.eth.Contract(Poseidon.abi, ContractAddress);
+            const power = await contract.methods.power(2).call();
+            console.log(power);
             setContract(contract);
-            const accounts = await window.web3.eth.getAccounts();
-            if (accounts.length !== 0) {
-                setAccount(accounts[0]);
-            }
         }
     };
 
@@ -50,7 +42,7 @@ export default function App() {
             throw new Error("Poseidon contract needs to be deployed to do this.");
         }
         if (account === "") {
-            await window.ethereum.enable();
+            await window.ethereum.send("eth_requestAccounts");
             const accounts = await window.web3.eth.getAccounts();
             setAccount(accounts[0]);
             return accounts[0];
@@ -59,23 +51,23 @@ export default function App() {
     };
 
     return (
-        <div className="App">
-            <AppContext.Provider value={{
-                contract: contract,
-                account: account,
-                enableMetamask: enableMetamask,
-            }}>
-                <BrowserRouter>
+        <AppContext.Provider value={{
+            contract: contract,
+            account: account,
+            apiBaseUrl: APIBaseUrl,
+            enableMetamask: enableMetamask,
+        }}>
+            <BrowserRouter>
+                <div className="App">
+                    <NavBar/>
                     <Switch>
-                        <Route path="/my-fish" component={MyFish}/>
-                        <Route path="/fish/:id" component={Fish}/>
-                        <Route path="/last-hunts" component={LastHunts}/>
-                        <Route path="/admin" component={Admin}/>
+                        <Route path="/account" component={Account}/>
+                        <Route path="/token/:id" component={Token}/>
                         <Route path="/" component={Home}/>
                     </Switch>
-                </BrowserRouter>
-            </AppContext.Provider>
-            <Messages messages={[]}/>
-        </div>
+                    <Messages messages={[]}/>
+                </div>
+            </BrowserRouter>
+        </AppContext.Provider>
     );
 }

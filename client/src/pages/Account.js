@@ -1,55 +1,51 @@
 import React, {useContext, useEffect, useState} from "react";
-import Mint from "../components/Mint";
 import SignInMetamask from "../components/SignInMetamask";
 import AppContext from "./AppContext";
 import {Link} from "react-router-dom";
 
-export default function MyFish() {
-    const [balance, setBalance] = useState(0);
-    const [fish, setFish] = useState([]);
+export default function Account() {
+    const [tokens, setTokens] = useState([]);
 
     const appContext = useContext(AppContext);
 
     useEffect(() => {
-        myFish().then();
-    }, []);
+        myTokens().then();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [appContext.contract]);
 
-    const myFish = async () => {
+    const myTokens = async () => {
         const account = appContext.account;
         const contract = appContext.contract;
         if (account === "" && Object.keys(contract).length === 0) {
             return;
         }
         const balance = await contract.methods.balanceOf(account).call();
-        if (balance > 0) {
-            setBalance(balance);
-        }
-        let newFish = [];
+        let newTokens = [];
         for (let i = 0; i < balance; i++) {
             const token = await contract.methods.tokenOfOwnerByIndex(account, i).call();
             const tokenPower = await contract.methods.power(token).call();
-            newFish.push({
+            newTokens.push({
                 "id": token,
                 "power": tokenPower,
                 "owner": account,
             })
         }
-        setFish(newFish);
+        setTokens(newTokens);
     }
 
-    function renderMyFish() {
+    function renderMyTokens() {
         const account = appContext.account;
         if (account === "") {
             return (
-                <div>You need to be logged in to see your fish: <SignInMetamask/></div>
+                <div>You need to be logged in to see your tokens: <SignInMetamask/></div>
             );
         }
         return (
             <div>
                 {
-                    fish.map(f =>
+                    tokens.map(f =>
                         <div className="m-5" key={f.id}>
-                            <div>Token: <Link to={"/fish/" + f["id"]}>{f["id"]}</Link></div>
+                            <div>Token: <Link to={"/token/" + f["id"]}>{f["id"]}</Link></div>
                             <div>Power: {f["power"]}</div>
                             <div>Address: {f["owner"]}</div>
                         </div>
@@ -60,12 +56,11 @@ export default function MyFish() {
     }
 
     return (
-        <div className="my-fish">
-            <h1>My fish</h1>
-            <div>
-                <Mint myFish={myFish}/>
-                <div>{renderMyFish()}</div>
+        <section className="section">
+            <div className="container account">
+                <h1>My tokens</h1>
+                <div>{renderMyTokens()}</div>
             </div>
-        </div>
+        </section>
     );
 }
