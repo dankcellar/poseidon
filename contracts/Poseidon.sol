@@ -33,7 +33,7 @@ contract Poseidon is ERC721Enumerable, Ownable {
     uint256 public constant MINT_PRICE = 0.08 ether;
     uint256 public constant MINT_MAX_TX = 10;
 
-    // sha256(sha256(sha256fish1.sha256shark1.sha256whale1.sha256kraken1)...)
+    // md5(md5fish1.md5shark1.md5whale1.md5kraken1.md5fish2.md5shark2.md5whale2.md5kraken2...)
     string public constant provenanceHash = "";
 
     bool public IpfsURI = false;

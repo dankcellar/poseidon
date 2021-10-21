@@ -9,7 +9,7 @@ const tokenAmount = 10;
 const tokenName = "Poseidon";
 const tokenExternalBaseUrl = "http://placeholder.eth.link/token/";
 const dataTypes = ["Background", "Body", "Eyes", "Mouth", "Hat", "Misc"];
-const tokenTypes = ["fish", "shark", "whale", "kraken"];
+const tokenTypes = ["Fish", "Shark", "Whale", "Kraken"];
 const imageSize = 350;
 
 function prepareDirs() {
@@ -68,6 +68,8 @@ async function generateAllTokens(data) {
         return canvas.toBuffer("image/png", {compressionLevel: 9, filters: canvas.PNG_ALL_FILTERS });
     }
 
+    let allHash256 = [];
+    let allMetadata = {};
     // find max p for each type
     let maxP = {};
     dataTypes.forEach(e => {maxP[e] = findMaxP(data[e])});
@@ -76,7 +78,8 @@ async function generateAllTokens(data) {
         // pick the random attributes
         let randomPicks = {};
         dataTypes.forEach(e => {randomPicks[e] = randomPick(e, data, maxP)});
-        // we need to generate an image for each tokenTypes
+        // generate an image for each tokenTypes
+        allMetadata[tokenId] = {};
         for (let i = 0; i < tokenTypes.length; i++) {
             // create an image array
             let imagesArray = [];
@@ -87,23 +90,35 @@ async function generateAllTokens(data) {
             const imgBuffer = await generateImage(imagesArray);
             const hashCID = await hashIPFS.of(imgBuffer);
             const hash256 = crypto.createHash("md5").update(imgBuffer).digest('hex');
-            const filename = "ipfs/tokens/" + tokenId +  "/" + tokenTypes[i] + ".png";
+            allHash256.push(hash256);
+            const filename = "ipfs/tokens/" + tokenId +  "/" + tokenTypes[i].toLowerCase() + ".png";
             fs.writeFileSync(filename, imgBuffer);
             // generate metadata
-            let metaData = {
+            let metadata = {
                 name: tokenName + " #" + tokenId,  // ~1
                 description: tokenName + " #" + tokenId,
                 image: "ipfs://" + hashCID,
                 external_url: tokenExternalBaseUrl + tokenId,
                 attributes: [],
             };
-            // TODO perhaps put different attribute name in evolutions
+            metadata.attributes.push({"trait_type": "Type", "value": tokenTypes[i]});
+            dataTypes.forEach(e => {
+                if (randomPicks[e].value !== "") {
+                    metadata.attributes.push({"trait_type": e, "value": randomPicks[e].value});
+                }
+            });
+            const metadataJSON = JSON.stringify(metadata);
+            fs.writeFileSync("ipfs/tokens/" + tokenId +  "/" + tokenTypes[i].toLowerCase(), metadataJSON);
+            allMetadata[tokenId][tokenTypes[i]] = metadata;
         }
-
-
         console.log("Token " + tokenId + " generated");
     }
-    // create a file with data.json with the md5 and other output
+    // all metadata JSON
+    const metadataJSON = JSON.stringify(allMetadata);
+    fs.writeFileSync("ipfs/all.json", metadataJSON);
+    // final md5sum
+    const hash256 = crypto.createHash("md5").update(allHash256.join("")).digest('hex');
+    fs.writeFileSync("ipfs/provenance.md5", hash256);
 }
 
 prepareDirs();

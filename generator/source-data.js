@@ -4,20 +4,20 @@ module.exports = {
             value: "",
             p: 100,
             source: {
-                fish: [],
-                shark: [],
-                whale: [],
-                kraken: []
+                Fish: [],
+                Shark: [],
+                Whale: [],
+                Kraken: []
             }
         },
         {
             value: "Ballon",
             p: 10,
             source: {
-                fish: [{image: "ballon.png", order: 10}],
-                shark: [{image: "ballon.png", order: 10}],
-                whale: [{image: "ballon.png", order: 10}],
-                kraken: [{image: "ballon.png", order: 10}]
+                Fish: [{image: "ballon.png", order: 10}],
+                Shark: [{image: "ballon.png", order: 10}],
+                Whale: [{image: "ballon.png", order: 10}],
+                Kraken: [{image: "ballon.png", order: 10}]
             }
         },
     ],
@@ -26,30 +26,30 @@ module.exports = {
             value: "Warriors",
             p: 10,
             source: {
-                fish: [{image: "warriors.png", order: 20}, {image: "pins.png", order: 90}],
-                shark: [{image: "warriors.png", order: 20}, {image: "pins.png", order: 90}],
-                whale: [{image: "warriors.png", order: 20}, {image: "pins.png", order: 90}],
-                kraken: [{image: "warriors.png", order: 20}, {image: "pins.png", order: 90}]
+                Fish: [{image: "warriors.png", order: 20}, {image: "pins.png", order: 90}],
+                Shark: [{image: "warriors.png", order: 20}, {image: "pins.png", order: 90}],
+                Whale: [{image: "warriors.png", order: 20}, {image: "pins.png", order: 90}],
+                Kraken: [{image: "warriors.png", order: 20}, {image: "pins.png", order: 90}]
             }
         },
         {
             value: "Beer",
             p: 10,
             source: {
-                fish: [{image: "beer.png", order: 20}],
-                shark: [{image: "beer.png", order: 20}],
-                whale: [{image: "beer.png", order: 20}],
-                kraken: [{image: "beer.png", order: 20}]
+                Fish: [{image: "beer.png", order: 20}],
+                Shark: [{image: "beer.png", order: 20}],
+                Whale: [{image: "beer.png", order: 20}],
+                Kraken: [{image: "beer.png", order: 20}]
             }
         },
         {
             value: "Lamp",
             p: 10,
             source: {
-                fish: [{image: "lamp.png", order: 20}],
-                shark: [{image: "lamp.png", order: 20}],
-                whale: [{image: "lamp.png", order: 20}],
-                kraken: [{image: "lamp.png", order: 20}]
+                Fish: [{image: "lamp.png", order: 20}],
+                Shark: [{image: "lamp.png", order: 20}],
+                Whale: [{image: "lamp.png", order: 20}],
+                Kraken: [{image: "lamp.png", order: 20}]
             }
         },
     ],
@@ -58,20 +58,20 @@ module.exports = {
             value: "Capsule",
             p: 10,
             source: {
-                fish: [{image: "capsule.png", order: 30}],
-                shark: [{image: "capsule.png", order: 30}],
-                whale: [{image: "capsule.png", order: 30}],
-                kraken: [{image: "capsule.png", order: 30}]
+                Fish: [{image: "capsule.png", order: 30}],
+                Shark: [{image: "capsule.png", order: 30}],
+                Whale: [{image: "capsule.png", order: 30}],
+                Kraken: [{image: "capsule.png", order: 30}]
             }
         },
         {
             value: "Tuerca",
             p: 10,
             source: {
-                fish: [{image: "tuerca.png", order: 30}],
-                shark: [{image: "tuerca.png", order: 30}],
-                whale: [{image: "tuerca.png", order: 30}],
-                kraken: [{image: "tuerca.png", order: 30}]
+                Fish: [{image: "tuerca.png", order: 30}],
+                Shark: [{image: "tuerca.png", order: 30}],
+                Whale: [{image: "tuerca.png", order: 30}],
+                Kraken: [{image: "tuerca.png", order: 30}]
             }
         },
     ],
@@ -80,20 +80,20 @@ module.exports = {
             value: "Emergency",
             p: 50,
             source: {
-                fish: [{image: "emergency.png", order: 40}],
-                shark: [{image: "emergency.png", order: 40}],
-                whale: [{image: "emergency.png", order: 40}],
-                kraken: [{image: "emergency.png", order: 40}]
+                Fish: [{image: "emergency.png", order: 40}],
+                Shark: [{image: "emergency.png", order: 40}],
+                Whale: [{image: "emergency.png", order: 40}],
+                Kraken: [{image: "emergency.png", order: 40}]
             }
         },
         {
             value: "Comcare",
             p: 10,
             source: {
-                fish: [{image: "comcare.png", order: 40}],
-                shark: [{image: "comcare.png", order: 40}],
-                whale: [{image: "comcare.png", order: 40}],
-                kraken: [{image: "comcare.png", order: 40}]
+                Fish: [{image: "comcare.png", order: 40}],
+                Shark: [{image: "comcare.png", order: 40}],
+                Whale: [{image: "comcare.png", order: 40}],
+                Kraken: [{image: "comcare.png", order: 40}]
             }
         },
     ],
@@ -102,30 +102,30 @@ module.exports = {
             value: "",
             p: 100,
             source: {
-                fish: [],
-                shark: [],
-                whale: [],
-                kraken: []
+                Fish: [],
+                Shark: [],
+                Whale: [],
+                Kraken: []
             }
         },
         {
             value: "Fiscal",
             p: 10,
             source: {
-                fish: [{image: "fiscal.png", order: 50}],
-                shark: [{image: "fiscal.png", order: 50}],
-                whale: [{image: "fiscal.png", order: 50}],
-                kraken: [{image: "fiscal.png", order: 50}]
+                Fish: [{image: "fiscal.png", order: 50}],
+                Shark: [{image: "fiscal.png", order: 50}],
+                Whale: [{image: "fiscal.png", order: 50}],
+                Kraken: [{image: "fiscal.png", order: 50}]
             }
         },
         {
             value: "Clip",
             p: 10,
             source: {
-                fish: [{image: "clip.png", order: 50}],
-                shark: [{image: "clip.png", order: 50}],
-                whale: [{image: "clip.png", order: 50}],
-                kraken: [{image: "clip.png", order: 50}]
+                Fish: [{image: "clip.png", order: 50}],
+                Shark: [{image: "clip.png", order: 50}],
+                Whale: [{image: "clip.png", order: 50}],
+                Kraken: [{image: "clip.png", order: 50}]
             }
         },
     ],
@@ -134,30 +134,30 @@ module.exports = {
             value: "",
             p: 100,
             source: {
-                fish: [],
-                shark: [],
-                whale: [],
-                kraken: []
+                Fish: [],
+                Shark: [],
+                Whale: [],
+                Kraken: []
             }
         },
         {
             value: "Drill",
             p: 10,
             source: {
-                fish: [{image: "drill.png", order: 60}],
-                shark: [{image: "drill.png", order: 60}],
-                whale: [{image: "drill.png", order: 60}],
-                kraken: [{image: "drill.png", order: 60}]
+                Fish: [{image: "drill.png", order: 60}],
+                Shark: [{image: "drill.png", order: 60}],
+                Whale: [{image: "drill.png", order: 60}],
+                Kraken: [{image: "drill.png", order: 60}]
             }
         },
         {
             value: "Pens",
             p: 10,
             source: {
-                fish: [{image: "pens.png", order: 60}],
-                shark: [{image: "pens.png", order: 60}],
-                whale: [{image: "pens.png", order: 60}],
-                kraken: [{image: "pens.png", order: 60}]
+                Fish: [{image: "pens.png", order: 60}],
+                Shark: [{image: "pens.png", order: 60}],
+                Whale: [{image: "pens.png", order: 60}],
+                Kraken: [{image: "pens.png", order: 60}]
             }
         },
     ],
