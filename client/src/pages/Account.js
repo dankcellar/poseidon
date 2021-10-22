@@ -48,8 +48,8 @@ export default function Account() {
     }
 
     return (
-        <section className="section">
-            <div className="container account">
+        <section className="section account-page">
+            <div className="container">
                 <h1>My tokens</h1>
                 <div>{renderMyTokens()}</div>
             </div>

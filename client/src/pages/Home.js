@@ -15,8 +15,8 @@ export default function Home() {
     }
 
     return (
-        <section className="section">
-            <div className="container home">
+        <section className="section home-page">
+            <div className="container">
                 <h1>Poseidon</h1>
                 <div>
                     {

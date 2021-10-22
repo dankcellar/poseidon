@@ -10305,4 +10305,116 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   padding: 3rem 1.5rem 6rem;
 }
 
+html {
+  background: #363942;
+}
+
+a {
+  color: #ed782c;
+}
+a:hover, a:active {
+  color: #ed782c;
+  text-decoration: underline;
+}
+
+.container {
+  max-width: 900px !important;
+}
+
+.section.navbar {
+  background: #222222;
+}
+.section.navbar .container {
+  display: block;
+  overflow: hidden;
+}
+.section.navbar .container .left {
+  float: left;
+}
+.section.navbar .container .left img.logo {
+  height: 60px;
+}
+.section.navbar .container .left img.logo:hover {
+  opacity: 0.8;
+}
+.section.navbar .container .right {
+  float: right;
+}
+.section.navbar .container .right ul {
+  margin-top: 15px;
+}
+.section.navbar .container .right ul li {
+  float: left;
+}
+.section.navbar .container .right ul li a {
+  display: block;
+  width: 40px;
+  height: 40px;
+}
+.section.navbar .container .right ul li a.twitter {
+  margin-right: 10px;
+}
+.section.navbar .container .right ul li a.twitter img {
+  margin: 2px;
+  width: 36px;
+}
+.section.navbar .container .right ul li a.opensea {
+  margin-left: 10px;
+}
+.section.navbar .container .right ul li a.opensea img {
+  margin: 3px;
+  width: 34px;
+}
+.section.navbar .container .right ul li a:hover {
+  opacity: 0.6;
+}
+
+.section.account {
+  background: #363942;
+  color: white;
+}
+.section.account .container {
+  display: block;
+  overflow: hidden;
+}
+.section.account .container .left {
+  float: left;
+}
+@media (max-width: 450px) {
+  .section.account .container .left .connected-hello .version-normal {
+    display: none;
+  }
+}
+@media (min-width: 451px) {
+  .section.account .container .left .connected-hello .version-mini {
+    display: none;
+  }
+}
+.section.account .container .left .connected-hello .my-account-link {
+  font-weight: bold;
+}
+.section.account .container .right {
+  float: right;
+}
+
+.section.foot {
+  background: #363942;
+  color: white;
+}
+.section.foot .container {
+  display: block;
+  overflow: hidden;
+}
+.section.foot .container .left {
+  float: left;
+}
+.section.foot .container .right {
+  float: right;
+}
+
+.main {
+  background: #2d4842;
+  color: white;
+}
+
 /*# sourceMappingURL=index.css.map */

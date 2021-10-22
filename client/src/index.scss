@@ -1,1 +1,115 @@
 @import "../node_modules/bulma/bulma.sass";
+
+html {
+  background: #363942;
+}
+
+a {
+  color: #ed782c;
+  &:hover, &:active {
+    color: #ed782c;
+    text-decoration: underline;
+  }
+}
+
+.container {
+  max-width: 900px !important;
+}
+
+.section.navbar {
+  background: #222222;
+  .container {
+    display: block;
+    overflow: hidden;
+    .left {
+      float: left;
+      img.logo {
+        height: 60px;
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+    .right {
+      float: right;
+      ul {
+        margin-top: 15px;
+        li {
+          float: left;
+          a {
+            display: block;
+            width: 40px;
+            height: 40px;
+            &.twitter {
+              margin-right: 10px;
+              img {
+                margin: 2px;
+                width: 36px;
+              }
+            }
+            &.opensea {
+              margin-left: 10px;
+              img {
+                margin: 3px;
+                width: 34px;
+              }
+            }
+            &:hover {
+              opacity: 0.6;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.section.account {
+  background: #363942;
+  color: white;
+  .container {
+    display: block;
+    overflow: hidden;
+    .left {
+      float: left;
+      .connected-hello {
+        .version-normal {
+          @media (max-width: 450px) {
+            display: none;
+          }
+        }
+        .version-mini {
+          @media (min-width: 451px) {
+            display: none;
+          }
+        }
+        .my-account-link {
+          font-weight: bold;
+        }
+      }
+    }
+    .right {
+      float: right;
+    }
+  }
+}
+
+.section.foot {
+  background: #363942;
+  color: white;
+  .container {
+    display: block;
+    overflow: hidden;
+    .left {
+      float: left;
+    }
+    .right {
+      float: right;
+    }
+  }
+}
+
+.main {
+  background: #2d4842;
+  color: white;
+}

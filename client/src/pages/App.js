@@ -1,4 +1,4 @@
-import Poseidon from '../contracts/Poseidon.json';
+import Poseidon from '../abi/Poseidon.json';
 import {useEffect, useState} from "react";
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import Home from "./Home";
@@ -8,9 +8,11 @@ import Token from "./Token";
 import NavBar from "../components/NavBar";
 import {useWeb3React} from "@web3-react/core";
 import AppContext from "./AppContext";
+import Footer from "../components/Footer";
+import Connector from "../components/Connector";
 
 export default function App() {
-    const [poseidon, setPoseidon] = useState(false);
+    const [poseidon, setPoseidon] = useState(null);
     const {library} = useWeb3React();
 
     useEffect(() => {
@@ -23,7 +25,7 @@ export default function App() {
             const contract = new library.eth.Contract(Poseidon.abi, process.env.REACT_APP_CONTRACT_ADDRESS);
             setPoseidon(contract);
         } else {
-            setPoseidon(false);
+            setPoseidon(null);
         }
     };
 
@@ -32,11 +34,15 @@ export default function App() {
             <BrowserRouter>
                 <div className="App">
                     <NavBar/>
-                    <Switch>
-                        <Route path="/account" component={Account}/>
-                        <Route path="/token/:id" component={Token}/>
-                        <Route path="/" component={Home}/>
-                    </Switch>
+                    <Connector/>
+                    <div className="main">
+                        <Switch>
+                            <Route path="/account" component={Account}/>
+                            <Route path="/token/:id" component={Token}/>
+                            <Route path="/" component={Home}/>
+                        </Switch>
+                    </div>
+                    <Footer/>
                     <Messages messages={[]}/>
                 </div>
             </BrowserRouter>

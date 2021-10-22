@@ -6,6 +6,7 @@ import {useWeb3React} from "@web3-react/core";
 
 export default function Mint() {
     const [mintAmount, setMintAmount] = useState(1);
+
     const {poseidon} = useContext(AppContext);
     const {account} = useWeb3React();
 
