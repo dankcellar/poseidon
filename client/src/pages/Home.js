@@ -11,6 +11,12 @@ export default function Home() {
             </section>
             <section className="section experiment">
                 <div className="container">
+                    <h2>What is Poseidon?</h2>
+                    <p>Poseidon is a collection of cool fish that lives in the Blockchain.</p>
+                </div>
+            </section>
+            <section className="section experiment">
+                <div className="container">
                     <h2>The experiment</h2>
                     <ul>
                         <li>Will people hunt to achieve more powerful fish for flexing them?</li>
@@ -20,11 +26,28 @@ export default function Home() {
                     </ul>
                 </div>
             </section>
+            <section className="section experiment">
+                <div className="container">
+                    <h2>Roadmap</h2>
+                    <ul>
+                        <li>NFT20 liquidity pool with 50 fish.</li>
+                        <li>Meme challenge with prize of 1 shark.</li>
+                        <li>Draw poseidon challenge with prize of 1 shark.</li>
+                        <li>Charity donation.</li>
+                        <li>Classic swag: hoodies, shirts, caps, pins.</li>
+                        <li>Unique NFT for the first shark.</li>
+                        <li>Unique NFT for the first whale.</li>
+                        <li>Unique NFT for the first kraken.</li>
+                        <li>Cryptovoxels space.</li>
+                    </ul>
+                </div>
+            </section>
             <section className="section faq">
                 <div className="container">
+                    <h2>FAQ</h2>
                     <ul>
-                        <li><string>Where is the contract?</string> The contract is <a href={"https://etherscan.io/address/" + process.env.REACT_APP_CONTRACT_ADDRESS} target="_blank" rel="noopener noreferrer">{process.env.REACT_APP_CONTRACT_ADDRESS}</a></li>
-                        <li><string>Is there a github?</string> Yes, <a href={process.env.REACT_APP_GITHUB} target="_blank" rel="noopener noreferrer">this is our github</a>.</li>
+                        <li><strong>Where is the contract?</strong> The contract is <a href={"https://etherscan.io/address/" + process.env.REACT_APP_CONTRACT_ADDRESS} target="_blank" rel="noopener noreferrer">{process.env.REACT_APP_CONTRACT_ADDRESS}</a></li>
+                        <li><strong>Is there a github?</strong> Yes, <a href={process.env.REACT_APP_GITHUB} target="_blank" rel="noopener noreferrer">this is our github</a>.</li>
                     </ul>
                 </div>
             </section>

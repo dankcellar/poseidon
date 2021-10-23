@@ -1,4 +1,4 @@
-import Poseidon from '../abi/Poseidon.json';
+import PoseidonAbi from '../abi/Poseidon.json';
 import {useEffect, useState} from "react";
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import Home from "./Home";
@@ -22,7 +22,7 @@ export default function App() {
 
     const loadContract = async () => {
         if (!!library) {
-            const contract = new library.eth.Contract(Poseidon.abi, process.env.REACT_APP_CONTRACT_ADDRESS);
+            const contract = new library.eth.Contract(PoseidonAbi, process.env.REACT_APP_CONTRACT_ADDRESS);
             setPoseidon(contract);
         } else {
             setPoseidon(null);

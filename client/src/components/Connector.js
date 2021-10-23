@@ -3,11 +3,12 @@ import {useWeb3React} from "@web3-react/core";
 import {injected} from "../utils/connectors";
 import AppContext from "../pages/AppContext";
 import {NavLink} from "react-router-dom";
+import {addErrorMessage} from "../utils/messages";
 
 export default function Account() {
     const [tokenBalance, setTokenBalance] = useState(0);
 
-    const {active, account, activate, deactivate} = useWeb3React();
+    const {active, account, activate, deactivate, library} = useWeb3React();
     const {poseidon} = useContext(AppContext);
 
     async function connect() {
@@ -29,8 +30,17 @@ export default function Account() {
     useEffect(() => {
         const fetchBalance = async () => {
             if (!poseidon) return;
-            const balance = await poseidon.methods.balanceOf(account).call();
-            setTokenBalance(balance);
+            if (tokenBalance === 0) {
+                const _tokenBalance = await poseidon.methods.balanceOf(account).call();
+                setTokenBalance(_tokenBalance);
+                // subscribe to blocks to update the current block
+                library.eth.subscribe("newBlockHeaders", function(error) {
+                    if (error) addErrorMessage(error);
+                }).on("data", async function() {
+                    const _tokenBalance = await poseidon.methods.balanceOf(account).call();
+                    setTokenBalance(_tokenBalance);
+                });
+            }
         }
         fetchBalance().then();
         // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -22,27 +22,30 @@ export default function Mint() {
 
     const getStartingBlock = async () => {
         if (!poseidon || !library) return;
-        // subscribe to blocks to update the current block
         if (currentBlock === 0) {
-            const _currentBlock = await library.eth.getBlockNumber();
-            const _startingBlock = await poseidon.methods.startingBlock({from: account});
-            const _totalSupply = await poseidon.methods.totalSupply({from: account});
-            const _publicMinted = await poseidon.methods.publicMinted({from: account});
-            setCurrentBlock(_currentBlock);
-            setStartingBlock(_startingBlock);
-            setTotalSupply(_totalSupply);
-            setPublicMinted(_publicMinted);
+            library.eth.getBlockNumber().then(function(blockNumber) { setCurrentBlock(blockNumber); });
+            updateBlockInfo();
+            // subscribe to blocks to update the current block
             library.eth.subscribe("newBlockHeaders", function(error) {
-                addErrorMessage(error);
-            }).on("data", async function(blockHeader){
+                if (error) addErrorMessage(error);
+            }).on("data", async function(blockHeader) {
                 setCurrentBlock(blockHeader.number);
-                const _totalSupply = await poseidon.methods.totalSupply({from: account});
-                const _publicMinted = await poseidon.methods.publicMinted({from: account});
-                setTotalSupply(_totalSupply);
-                setPublicMinted(_publicMinted);
+                updateBlockInfo();
             });
         }
     };
+
+    function updateBlockInfo() {
+        poseidon.methods.startingBlock().call({from: account}).then(function(startingBlock) {
+            setStartingBlock(parseInt(startingBlock));
+        });
+        poseidon.methods.totalSupply().call({from: account}).then(function(totalSupply) {
+            setTotalSupply(parseInt(totalSupply));
+        });
+        poseidon.methods.publicMinted().call({from: account}).then(function(publicMinted) {
+            setPublicMinted(parseInt(publicMinted));
+        });
+    }
 
     async function connect() {
         try {
@@ -57,7 +60,7 @@ export default function Mint() {
         try {
             const totalPrice = mintAmount * process.env.REACT_APP_MINT_PRICE * 1000000000000000000;
             await poseidon.methods.mint(mintAmount).send({from: account, value: totalPrice});
-            addMessage("Minted successfully!");
+            addMessage("Minted successfully! Waiting for blockchain to confirm...");
         } catch (e) {
             addErrorMessage(e.message);
         }
@@ -77,10 +80,12 @@ export default function Mint() {
 
     function getMintJSX() {
         if (!poseidon) return;
+        if (startingBlock === 0) return;
         if (startingBlock === 999999999) {
             return (
                 <div className="mint-date">
-                    Mint starts on {process.env.REACT_APP_MINT_DATE}, one day before we will announce the exact block.
+                    <p>Mint starts on {process.env.REACT_APP_MINT_DATE}, some hours before we will announce the exact block.</p>
+                    <p>Price per mint is {process.env.REACT_APP_MINT_PRICE} eth.</p>
                 </div>
             );
         }
@@ -88,23 +93,26 @@ export default function Mint() {
             return (
                 <div className="mint-block">
                     <p>Sale starts in {startingBlock - currentBlock} blocks.</p>
+                    <p>Price per mint is {process.env.REACT_APP_MINT_PRICE} eth.</p>
                 </div>
             );
         }
-        if (publicMinted === process.env.REACT_APP_MINT_PUBLIC) {
+        if (publicMinted === 11) {
             return (
                 <div className="mint-sold-out">
                     <p>Sold out!</p>
+                    <p>Thanks for all the fish!</p>
                     <p>Current total supply is {totalSupply}/10000</p>
+
                 </div>
             );
         }
         return (
             <div className="mint">
                 <p>{process.env.REACT_APP_MINT_PUBLIC - publicMinted} available fish.</p>
-                <Select name="mint-amount" label="Mint" options={mintAmountOptions()} onChange={onSelectMintAmount}/>
+                <p>Price per mint is {process.env.REACT_APP_MINT_PRICE} eth.</p>
+                    <Select name="mint-amount" label="Mint" options={mintAmountOptions()} onChange={onSelectMintAmount}/>
                 <button onClick={() => mint()}>Mint</button>
-                <p>Thanks for all the fish!</p>
             </div>
         );
     }

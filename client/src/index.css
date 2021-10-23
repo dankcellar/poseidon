@@ -10317,6 +10317,10 @@ a:hover, a:active {
   text-decoration: underline;
 }
 
+strong {
+  color: white;
+}
+
 .container {
   max-width: 900px !important;
 }
