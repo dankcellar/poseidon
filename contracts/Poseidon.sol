@@ -32,15 +32,14 @@ contract Poseidon is ERC721Enumerable, Ownable {
     uint256 public constant MINT_PRIVATE = 420;
     uint256 public constant MINT_PRICE = 0.08 ether;
     uint256 public constant MINT_MAX_TX = 10;
-
     // md5(md5fish1.md5shark1.md5whale1.md5kraken1.md5fish2.md5shark2.md5whale2.md5kraken2...)
-    string public constant provenanceHash = "";
+    string public constant PROVENANCE_HASH = "";
 
-    bool public IpfsURI = false;
-    string private _tokenBaseURI;
-    string private _contractURI;
+    string private _contractURI = "";
+    string private _tokenBaseURI = "";
+    bool private IpfsURI = false;
 
-    uint256 public startingBlock = 999999999;
+    uint256 private _startingBlock = 999999999;
     uint256 private _currentTokenId = 0;
     uint256 private _publicMinted = 0;
     uint256 private _privateMinted = 0;
@@ -52,7 +51,7 @@ contract Poseidon is ERC721Enumerable, Ownable {
 
     // Public sale
     function mint(uint256 _quantity) external payable {
-        require(block.number >= startingBlock, "SALE_NOT_STARTED");
+        require(block.number >= _startingBlock, "SALE_NOT_STARTED");
         require(_quantity <= MINT_MAX_TX, "QUANTITY_ABOVE_MAX_MINT");
         require(_publicMinted + _quantity <= MINT_PUBLIC, "WOULD_EXCEED_SUPPLY");
         require(msg.value >= MINT_PRICE * _quantity, "NOT_ENOUGH_ETH");
@@ -122,8 +121,8 @@ contract Poseidon is ERC721Enumerable, Ownable {
     }
 
     // Set starting block for the sale
-    function setStartingBlock(uint256 _startingBlock) external onlyOwner {
-        startingBlock = _startingBlock;
+    function setStartingBlock(uint256 startingBlock_) external onlyOwner {
+        _startingBlock = startingBlock_;
     }
 
     // Transfer all the balance to the owner
@@ -150,5 +149,15 @@ contract Poseidon is ERC721Enumerable, Ownable {
     // Overrides _baseURI to be a custom URI
     function _baseURI() internal view override(ERC721) returns (string memory) {
         return _tokenBaseURI;
+    }
+
+    // View starting block
+    function startingBlock() public view returns (uint256) {
+        return _startingBlock;
+    }
+
+    // View public minted amount
+    function publicMinted() public view returns (uint256) {
+        return _publicMinted;
     }
 }

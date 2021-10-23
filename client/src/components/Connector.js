@@ -5,7 +5,7 @@ import AppContext from "../pages/AppContext";
 import {NavLink} from "react-router-dom";
 
 export default function Account() {
-    const [tokenBalance, setTokenBalance] = useState({});
+    const [tokenBalance, setTokenBalance] = useState(0);
 
     const {active, account, activate, deactivate} = useWeb3React();
     const {poseidon} = useContext(AppContext);
@@ -37,7 +37,7 @@ export default function Account() {
     }, [poseidon]);
 
     function getConnectedHello() {
-        if (!account) return;
+        if (!active) return;
         const shortAccount = account.substr(0, 6) + "..." + account.substr(38, 4);
         if (tokenBalance === 0) {
             return (

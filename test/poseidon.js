@@ -57,6 +57,9 @@ contract('Poseidon', accounts => {
             await instance.mint(1, {from: bob, value: fishPrice});
             let ownerOfToken2 = await instance.ownerOf(2, {from: owner});
             assert.strictEqual(ownerOfToken2, bob, "Owner of token 2 should be bob");
+            // check public minted
+            const publicMint = await instance.publicMinted({from: alice});
+            assert.strictEqual(publicMint.toString(), "2", "Public mint amount should be correct");
             // token 0 does not exist
             await expectedExceptionPromise(function() {
                 return instance.ownerOf(0, {from: owner});
@@ -79,6 +82,9 @@ contract('Poseidon', accounts => {
             let power10 = await instance.power(10, {from: owner});
             assert.strictEqual(power1.toString(), "1", "Token 1 should have power 1");
             assert.strictEqual(power10.toString(), "1", "Token 10 should have power 1");
+            // check public minted
+            const publicMint = await instance.publicMinted({from: alice});
+            assert.strictEqual(publicMint.toString(), "10", "Public mint amount should be correct");
         });
         it("should not let mint if sale did not start", async function() {
             await instance.setStartingBlock(999999999, {from: owner});
@@ -141,6 +147,9 @@ contract('Poseidon', accounts => {
             // check token 1 power
             let power = await instance.power(1, {from: owner});
             assert.strictEqual(power.toString(), "1", "Token 1 should have power 1");
+            // check public minted
+            const publicMint = await instance.publicMinted({from: alice});
+            assert.strictEqual(publicMint.toString(), "0", "Public mint amount should be correct");
         });
         it("should mint many to collaborators", async function() {
             let txObj1 = await instance.mintPrivate([alice, bob], {from: owner});
@@ -267,18 +276,14 @@ contract('Poseidon', accounts => {
             await instance.mint(2, {from: alice, value: fishPrice*2});
             let r1 = await instance.tokenURI(1, {from: owner});
             let r2 = await instance.tokenURI(2, {from: owner});
-            let ipfsUri = await instance.IpfsURI({from: alice});
             assert.strictEqual(r1, "https://baseuri123.com/1/fish", "TokenURI for token 1 is not correct");
             assert.strictEqual(r2, "https://baseuri123.com/2/fish", "TokenURI for token 2 is not correct");
-            assert.strictEqual(ipfsUri, true, "Ipfs URI should be false");
             // ipfs
             await instance.setBaseURI("https://baseuri123.com/", false, {from: owner});
             let r12 = await instance.tokenURI(1, {from: owner});
             let r22 = await instance.tokenURI(2, {from: owner});
-            let ipfsUri2 = await instance.IpfsURI({from: alice});
             assert.strictEqual(r12, "https://baseuri123.com/1/1", "TokenURI for token 1 is not correct");
             assert.strictEqual(r22, "https://baseuri123.com/2/1", "TokenURI for token 2 is not correct");
-            assert.strictEqual(ipfsUri2, false, "Ipfs URI should be true");
         });
         it("should return correct base uri when token is a shark", async function() {
             await instance.setBaseURI("https://baseuri123.com/", true, {from: owner});
