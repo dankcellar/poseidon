@@ -16,6 +16,11 @@ strong {
   color: white;
 }
 
+.main {
+  background: #2d4842;
+  color: white;
+}
+
 .container {
   max-width: 900px !important;
 }
@@ -113,7 +118,86 @@ strong {
   }
 }
 
-.main {
-  background: #2d4842;
-  color: white;
+.section.account-page {
+  .account.has-tokens {
+    .token-item {
+      width: 100%;
+      overflow: hidden;
+      border: 2px solid black;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      .token-image {
+        float: left;
+        display: block;
+        margin: 5px;
+        img {
+          display: block;
+          height: 80px;
+        }
+      }
+      .token-name {
+        float: left;
+        font-size: 20px;
+        padding: 10px;
+      }
+      .token-power {
+        float: left;
+        font-size: 20px;
+        padding: 10px;
+      }
+      .token-view {
+        float: right;
+        font-size: 20px;
+        padding: 10px;
+      }
+    }
+  }
+}
+
+section.token-page {
+  .token{
+    overflow: hidden;
+    .token-image {
+      width: 35%;
+      float: left;
+    }
+    .token-data {
+      width: 65%;
+      float: right;
+      padding-left: 15px;
+      .token-hunt {
+        .token-hunt-alert {
+          background-color: #5b2929;
+        }
+        .prey-list {
+          .prey {
+            border: 1px solid black;
+            padding: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            .prey-image {
+              float: left;
+              display: block;
+              img {
+                display: block;
+                height: 60px;
+              }
+            }
+            .prey-name {
+              float: left;
+              padding: 5px;
+            }
+            .prey-power {
+              float: left;
+              padding: 5px;
+            }
+            .prey-hunt {
+              float: right;
+              padding: 5px;
+            }
+          }
+        }
+      }
+    }
+  }
 }

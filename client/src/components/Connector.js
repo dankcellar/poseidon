@@ -59,7 +59,7 @@ export default function Account() {
         return (
             <span>
                 <span className="version-mini">You own <NavLink to="/account" className="my-account-link">{tokenBalance} fish</NavLink></span>
-                <span className="version-normal">Hello {shortAccount}, you own <NavLink to="/account" className="my-account-link">{tokenBalance} fish</NavLink></span>
+                <span className="version-normal">Hello {shortAccount}, you have <NavLink to="/account" className="my-account-link">{tokenBalance} fish</NavLink></span>
             </span>);
     }
 

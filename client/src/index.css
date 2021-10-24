@@ -10321,6 +10321,11 @@ strong {
   color: white;
 }
 
+.main {
+  background: #2d4842;
+  color: white;
+}
+
 .container {
   max-width: 900px !important;
 }
@@ -10416,9 +10421,78 @@ strong {
   float: right;
 }
 
-.main {
-  background: #2d4842;
-  color: white;
+.section.account-page .account.has-tokens .token-item {
+  width: 100%;
+  overflow: hidden;
+  border: 2px solid black;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+.section.account-page .account.has-tokens .token-item .token-image {
+  float: left;
+  display: block;
+  margin: 5px;
+}
+.section.account-page .account.has-tokens .token-item .token-image img {
+  display: block;
+  height: 80px;
+}
+.section.account-page .account.has-tokens .token-item .token-name {
+  float: left;
+  font-size: 20px;
+  padding: 10px;
+}
+.section.account-page .account.has-tokens .token-item .token-power {
+  float: left;
+  font-size: 20px;
+  padding: 10px;
+}
+.section.account-page .account.has-tokens .token-item .token-view {
+  float: right;
+  font-size: 20px;
+  padding: 10px;
+}
+
+section.token-page .token {
+  overflow: hidden;
+}
+section.token-page .token .token-image {
+  width: 35%;
+  float: left;
+}
+section.token-page .token .token-data {
+  width: 65%;
+  float: right;
+  padding-left: 15px;
+}
+section.token-page .token .token-data .token-hunt .token-hunt-alert {
+  background-color: #5b2929;
+}
+section.token-page .token .token-data .token-hunt .prey-list .prey {
+  border: 1px solid black;
+  padding: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+section.token-page .token .token-data .token-hunt .prey-list .prey .prey-image {
+  float: left;
+  display: block;
+}
+section.token-page .token .token-data .token-hunt .prey-list .prey .prey-image img {
+  display: block;
+  height: 60px;
+}
+section.token-page .token .token-data .token-hunt .prey-list .prey .prey-name {
+  float: left;
+  padding: 5px;
+}
+section.token-page .token .token-data .token-hunt .prey-list .prey .prey-power {
+  float: left;
+  padding: 5px;
+}
+section.token-page .token .token-data .token-hunt .prey-list .prey .prey-hunt {
+  float: right;
+  padding: 5px;
 }
 
 /*# sourceMappingURL=index.css.map */

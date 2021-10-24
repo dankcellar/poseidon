@@ -97,7 +97,7 @@ export default function Mint() {
                 </div>
             );
         }
-        if (publicMinted === 11) {
+        if (publicMinted === process.env.REACT_APP_MINT_PUBLIC) {
             return (
                 <div className="mint-sold-out">
                     <p>Sold out!</p>

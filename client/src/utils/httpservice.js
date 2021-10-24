@@ -1,5 +1,4 @@
 import axios from "axios";
-import {addErrorMessage} from "./messages";
 
 axios.interceptors.response.use(null, error => {
     const expectedError =
@@ -8,7 +7,7 @@ axios.interceptors.response.use(null, error => {
         error.response.status < 500;
 
     if (!expectedError) {
-        addErrorMessage("Response error: " + error);
+        console.error("Response error: " + error);
     }
 
     return Promise.reject(error);

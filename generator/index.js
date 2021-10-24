@@ -13,6 +13,8 @@ const tokenTypes = ["Fish", "Shark", "Whale", "Kraken"];
 const imageSize = 350;
 
 function prepareDirs() {
+    fs.rmdirSync("images", {recursive: true});
+    fs.mkdirSync("images");
     fs.rmdirSync("ipfs", {recursive: true});
     fs.mkdirSync("ipfs");
     fs.mkdirSync("ipfs/tokens");
@@ -93,6 +95,7 @@ async function generateAllTokens(data) {
             allHash256.push(hash256);
             const filename = "ipfs/tokens/" + tokenId +  "/" + tokenTypes[i].toLowerCase() + ".png";
             fs.writeFileSync(filename, imgBuffer);
+            fs.writeFileSync("images/" + hashCID +  ".png", imgBuffer);
             // generate metadata
             let metadata = {
                 name: tokenName + " #" + tokenId,  // ~1

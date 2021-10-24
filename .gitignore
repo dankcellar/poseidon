@@ -15,7 +15,7 @@ dist/
 package-lock.json
 
 # generator
-/generator/ipfs/
-!/generator/ipfs/.gitkeep
 /generator/source/
 !/generator/source/.gitkeep
+/generator/ipfs/
+/generator/images/
