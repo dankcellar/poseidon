@@ -8,7 +8,7 @@ axios.interceptors.response.use(null, error => {
         error.response.status < 500;
 
     if (!expectedError) {
-        addErrorMessage("Logging response error", error);
+        addErrorMessage("Response error: " + error);
     }
 
     return Promise.reject(error);

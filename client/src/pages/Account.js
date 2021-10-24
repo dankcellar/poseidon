@@ -2,11 +2,13 @@ import React, {useContext, useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {useWeb3React} from "@web3-react/core";
 import AppContext from "./AppContext";
+import {fetchToken} from "../utils/api";
+import {addErrorMessage} from "../utils/messages";
 
 export default function Account() {
     const [tokens, setTokens] = useState([]);
 
-    const {account} = useWeb3React();
+    const {account, active} = useWeb3React();
     const {poseidon} = useContext(AppContext);
 
     useEffect(() => {
@@ -19,27 +21,49 @@ export default function Account() {
         const balance = await poseidon.methods.balanceOf(account).call();
         let newTokens = [];
         for (let i = 0; i < balance; i++) {
-            const token = await poseidon.methods.tokenOfOwnerByIndex(account, i).call();
-            const power = await poseidon.methods.power(token).call();
-            newTokens.push({
-                "id": token,
-                "power": power,
-                "owner": account,
-            })
+            try {
+                const tokenId = await poseidon.methods.tokenOfOwnerByIndex(account, i).call();
+                const power = await poseidon.methods.power(tokenId).call();
+                const tokenApiData = await fetchToken(tokenId);
+                console.log(tokenApiData);
+                newTokens.push({
+                    id: tokenId,
+                    power: power,
+                    owner: account,
+                    api: tokenApiData
+                })
+                setTokens(newTokens);
+            } catch (e) {
+                addErrorMessage("Error while loading token " + i + " of account: " + e);
+            }
         }
-        setTokens(newTokens);
+    }
+
+    function getTokenImage(token) {
+        if (!token.api || Object.keys(token.api).length === 0) {
+            return;
+        }
+        const img = token.api.image.replace("ipfs://", process.env.REACT_APP_IPFS_GATEWAY);
+        return <img src={img} alt={token.api.name} />
     }
 
     function renderMyTokens() {
-        if (!poseidon) return;
+        if (!active || !poseidon) {
+            return (
+                <div className="account-not-active">You need to connect to see your fish.</div>
+            );
+        }
         return (
             <div>
                 {
                     tokens.map(f =>
-                        <div className="m-5" key={f.id}>
-                            <div>Token: <Link to={"/token/" + f["id"]}>{f["id"]}</Link></div>
-                            <div>Power: {f["power"]}</div>
-                            <div>Address: {f["owner"]}</div>
+                        <div className="my-5" key={f.id}>
+                            <Link to={"/token/" + f.id}>
+                                <div>Token: {f.id}</div>
+                                <div>{getTokenImage(f)}</div>
+                                <div>Power: {f["power"]}</div>
+                                <div>Address: {f["owner"]}</div>
+                            </Link>
                         </div>
                     )
                 }

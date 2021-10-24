@@ -69,10 +69,10 @@ export default function Token(props) {
     }
 
     function getTokenImage() {
-        if (Object.keys(tokenApiData).length === 0) {
+        if (!tokenApiData || Object.keys(tokenApiData).length === 0) {
             return;
         }
-        let img = tokenApiData.image.replace("ipfs://", process.env.REACT_APP_IPFS_GATEWAY);
+        const img = tokenApiData.image.replace("ipfs://", process.env.REACT_APP_IPFS_GATEWAY);
         return <img src={img} alt={tokenApiData.name} />
     }
 
