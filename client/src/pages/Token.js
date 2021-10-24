@@ -18,7 +18,7 @@ export default function Token(props) {
     useEffect(() => {
         fetchTokenData().then();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [poseidon, tokenId]);
+    }, [poseidon, account, tokenId]);
 
     const fetchTokenData = async () => {
         const tokenSort = function(a, b) {
@@ -30,13 +30,16 @@ export default function Token(props) {
         if (!poseidon) return;
         const _power = await poseidon.methods.power(tokenId).call();
         const _owner = await poseidon.methods.ownerOf(tokenId).call();
-        const _apiData = await fetchToken(tokenId, _power);
-        const _token = {
+        let _token = {
             id: tokenId,
             power: _power,
             owner: _owner,
-            api: _apiData
         };
+        try {
+            _token.api = await fetchToken(tokenId, _power);
+        } catch (e) {
+            addErrorMessage("Error while loading fish: " + e);
+        }
         setTokenData(_token);
         // fetch preys
         if (_owner === account) {
@@ -59,7 +62,11 @@ export default function Token(props) {
                                     setPreys(preyList);
                                 }
                             }).catch(function (e) {
-                                addErrorMessage("Error while loading token " + i + " of account: " + e)
+                                addErrorMessage("Error while loading token " + i + " of account: " + e);
+                                preyList.push({
+                                    id: parseInt(preyId),
+                                    power: preyPower
+                                });
                                 if (++j === parseInt(balance)) {
                                     preyList.sort(tokenSort);
                                     setPreys(preyList);

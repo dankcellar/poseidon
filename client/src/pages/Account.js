@@ -14,10 +14,10 @@ export default function Account() {
     useEffect(() => {
         myTokens().then();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [poseidon]);
+    }, [poseidon, account]);
 
     const myTokens = async () => {
-        const tokenSort = function(a, b) {
+        const tokenSort = function (a, b) {
             if (a.id > b.id) return 1;
             if (a.id < b.id) return -1;
             return 0;
@@ -25,29 +25,37 @@ export default function Account() {
 
         if (!poseidon) return;
         const balance = await poseidon.methods.balanceOf(account).call();
-        let newTokens = [];
+        let myTokens = [];
+        if (parseInt(balance) === 0) {
+            setTokens(myTokens);
+            return;
+        }
         let j = 0;
         for (let i = 0; i < balance; i++) {
             // eslint-disable-next-line no-loop-func
             poseidon.methods.tokenOfOwnerByIndex(account, i).call().then(function (tokenId) {
                 poseidon.methods.power(tokenId).call().then(function (power) {
                     fetchToken(tokenId, power).then(function (tokenApiData) {
-                            newTokens.push({
-                                id: parseInt(tokenId),
-                                power: power,
-                                api: tokenApiData
-                            });
-                            if (++j === parseInt(balance)) {
-                                newTokens.sort(tokenSort);
-                                setTokens(newTokens);
-                            }
-                        }).catch(function (e) {
-                            addErrorMessage("Error while loading token " + i + " of account: " + e)
-                            if (++j === parseInt(balance)) {
-                                newTokens.sort(tokenSort);
-                                setTokens(newTokens);
-                            }
+                        myTokens.push({
+                            id: parseInt(tokenId),
+                            power: power,
+                            api: tokenApiData
                         });
+                        if (++j === parseInt(balance)) {
+                            myTokens.sort(tokenSort);
+                            setTokens(myTokens);
+                        }
+                    }).catch(function (e) {
+                        addErrorMessage("Error while loading token " + i + " of account: " + e);
+                        myTokens.push({
+                            id: parseInt(tokenId),
+                            power: power
+                        });
+                        if (++j === parseInt(balance)) {
+                            myTokens.sort(tokenSort);
+                            setTokens(myTokens);
+                        }
+                    });
                 });
             });
         }
@@ -74,10 +82,13 @@ export default function Account() {
         }
         if (tokens.length === 0) {
             return (
-                <div className="account-no-tokens">You have no fish!
-                    <a href={process.env.REACT_APP_OPENSEA} target="_blank" rel="noopener noreferrer">
-                        Buy some fish to see it here.
-                    </a>
+                <div className="account-no-tokens">
+                    <p>You have no fish!</p>
+                    <p>
+                        <a href={process.env.REACT_APP_OPENSEA} target="_blank" rel="noopener noreferrer">
+                            Buy some fish to see it here.
+                        </a>
+                    </p>
                 </div>
             );
         }
