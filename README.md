@@ -29,6 +29,12 @@ https://remix.ethereum.org/
 # generator
 cd generator
 node .
+
+# bots
+sudo npm install -g n
+sudo n 16.6.0  
+cd bot-hunt
+node .
 ```
 
 ## OpenSea

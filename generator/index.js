@@ -5,7 +5,7 @@ const crypto = require('crypto');
 
 const sourceData = require("./source-data");
 const contract = require("./contract");
-const tokenAmount = 10;
+const tokenAmount = 20;
 const tokenName = "Poseidon";
 const tokenExternalBaseUrl = "http://placeholder.eth.link/token/";
 const dataTypes = ["Background", "Body", "Eyes", "Mouth", "Hat", "Misc"];
@@ -95,7 +95,7 @@ async function generateAllTokens(data) {
             allHash256.push(hash256);
             const filename = "ipfs/tokens/" + tokenId +  "/" + tokenTypes[i].toLowerCase() + ".png";
             fs.writeFileSync(filename, imgBuffer);
-            fs.writeFileSync("images/" + hashCID +  ".png", imgBuffer);
+            fs.writeFileSync("images/" + tokenId + "-" + tokenTypes[i].toLowerCase() +  ".png", imgBuffer);
             // generate metadata
             let metadata = {
                 name: tokenName + " #" + tokenId,  // ~1

@@ -3,8 +3,8 @@ import {addErrorMessage, addMessage} from "../utils/messages";
 import AppContext from "./AppContext";
 import {Link} from "react-router-dom";
 import {useWeb3React} from "@web3-react/core";
-import {fetchToken} from "../utils/api";
 import useDynamicRefs from 'use-dynamic-refs';
+import {renderTokenImage} from "../utils/images";
 
 export default function Token(props) {
     const [tokenData, setTokenData] = useState({});
@@ -21,7 +21,7 @@ export default function Token(props) {
     }, [poseidon, account, tokenId]);
 
     const fetchTokenData = async () => {
-        const tokenSort = function(a, b) {
+        const tokenSort = function (a, b) {
             if (a.id > b.id) return 1;
             if (a.id < b.id) return -1;
             return 0;
@@ -35,11 +35,6 @@ export default function Token(props) {
             power: _power,
             owner: _owner,
         };
-        try {
-            _token.api = await fetchToken(tokenId, _power);
-        } catch (e) {
-            addErrorMessage("Error while loading fish: " + e);
-        }
         setTokenData(_token);
         // fetch preys
         if (_owner === account) {
@@ -51,32 +46,14 @@ export default function Token(props) {
                 poseidon.methods.tokenOfOwnerByIndex(account, i).call().then(function (preyId) {
                     poseidon.methods.power(preyId).call().then(function (preyPower) {
                         if (preyPower <= _token.power && preyId !== _token.id) {
-                            fetchToken(preyId, preyPower).then(function (tokenApiData) {
-                                preyList.push({
-                                    id: parseInt(preyId),
-                                    power: preyPower,
-                                    api: tokenApiData
-                                });
-                                if (++j === parseInt(balance)) {
-                                    preyList.sort(tokenSort);
-                                    setPreys(preyList);
-                                }
-                            }).catch(function (e) {
-                                addErrorMessage("Error while loading token " + i + " of account: " + e);
-                                preyList.push({
-                                    id: parseInt(preyId),
-                                    power: preyPower
-                                });
-                                if (++j === parseInt(balance)) {
-                                    preyList.sort(tokenSort);
-                                    setPreys(preyList);
-                                }
+                            preyList.push({
+                                id: parseInt(preyId),
+                                power: preyPower
                             });
-                        } else {
-                            if (++j === parseInt(balance)) {
-                                preyList.sort(tokenSort);
-                                setPreys(preyList);
-                            }
+                        }
+                        if (++j === parseInt(balance)) {
+                            preyList.sort(tokenSort);
+                            setPreys(preyList);
                         }
                     });
                 });
@@ -100,14 +77,6 @@ export default function Token(props) {
         }
     };
 
-    function renderTokenImage(data) {
-        if (!data || typeof data.api === "undefined") {
-            return;
-        }
-        const img = data.api.image.replace("ipfs://", process.env.REACT_APP_API_IMAGE_URL) + ".png";
-        return <img src={img} alt={data.api.name}/>
-    }
-
     function renderTokenHunt() {
         if (!active || !poseidon || account !== tokenData.owner) {
             return (
@@ -117,7 +86,8 @@ export default function Token(props) {
         return (
             <div className="token-hunt">
                 <h2>Can hunt the following preys:</h2>
-                <p className="token-hunt-alert">When hunting, your prey will be burned (will cease to exist), and the prey power will be added to Fish #{tokenData.id}.</p>
+                <p className="token-hunt-alert">When hunting, your prey will be burned (will cease to exist), and the
+                    prey power will be added to Fish #{tokenData.id}.</p>
                 <div className="prey-list">
                     {
                         preys.map(f =>
@@ -125,7 +95,9 @@ export default function Token(props) {
                                 <div className="prey-image">{renderTokenImage(f)}</div>
                                 <div className="prey-name"><Link to={"/token/" + f.id}>Fish #{f.id}</Link></div>
                                 <div className="prey-power">Power: {f.power}</div>
-                                <button ref={setRef(f.id)} className="prey-hunt" onClick={() => hunt(tokenData.id, f.id)}>Hunt!</button>
+                                <button ref={setRef(f.id)} className="prey-hunt"
+                                        onClick={() => hunt(tokenData.id, f.id)}>Hunt!
+                                </button>
                             </div>
                         )
                     }

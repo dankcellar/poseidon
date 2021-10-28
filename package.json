@@ -22,7 +22,7 @@
     "type": "git",
     "url": "git+https://github.com/amper-lab/poseidon.git"
   },
-  "author": "Amperlab",
+  "author": "Amperlabs",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/amper-lab/poseidon/issues"

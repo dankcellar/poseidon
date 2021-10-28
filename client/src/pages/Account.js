@@ -2,8 +2,7 @@ import React, {useContext, useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {useWeb3React} from "@web3-react/core";
 import AppContext from "./AppContext";
-import {fetchToken} from "../utils/api";
-import {addErrorMessage} from "../utils/messages";
+import {renderTokenImage} from "../utils/images";
 
 export default function Account() {
     const [tokens, setTokens] = useState(null);
@@ -35,38 +34,17 @@ export default function Account() {
             // eslint-disable-next-line no-loop-func
             poseidon.methods.tokenOfOwnerByIndex(account, i).call().then(function (tokenId) {
                 poseidon.methods.power(tokenId).call().then(function (power) {
-                    fetchToken(tokenId, power).then(function (tokenApiData) {
-                        myTokens.push({
-                            id: parseInt(tokenId),
-                            power: power,
-                            api: tokenApiData
-                        });
-                        if (++j === parseInt(balance)) {
-                            myTokens.sort(tokenSort);
-                            setTokens(myTokens);
-                        }
-                    }).catch(function (e) {
-                        addErrorMessage("Error while loading token " + i + " of account: " + e);
-                        myTokens.push({
-                            id: parseInt(tokenId),
-                            power: power
-                        });
-                        if (++j === parseInt(balance)) {
-                            myTokens.sort(tokenSort);
-                            setTokens(myTokens);
-                        }
+                    myTokens.push({
+                        id: parseInt(tokenId),
+                        power: power,
                     });
+                    if (++j === parseInt(balance)) {
+                        myTokens.sort(tokenSort);
+                        setTokens(myTokens);
+                    }
                 });
             });
         }
-    }
-
-    function renderTokenImage(token) {
-        if (!token.api || Object.keys(token.api).length === 0) {
-            return;
-        }
-        const img = token.api.image.replace("ipfs://", process.env.REACT_APP_API_IMAGE_URL) + ".png";
-        return <img src={img} alt={token.api.name}/>
     }
 
     function renderMyTokens() {

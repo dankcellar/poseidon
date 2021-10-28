@@ -1,5 +1,5 @@
 {
-  "name": "poseidon-generator",
+  "name": "poseidon-bot",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,8 +8,10 @@
   },
   "author": "Amperlabs",
   "license": "MIT",
-  "devDependencies": {
-    "canvas": "^2.8.0",
-    "ipfs-only-hash": "^4.0.0"
+  "dependencies": {
+    "discord.js": "^13.2.0",
+    "dotenv": "10.0.0",
+    "web3": "1.2.2",
+    "axios": "^0.24.0"
   }
 }
