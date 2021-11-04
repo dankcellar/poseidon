@@ -88,12 +88,13 @@ contract Poseidon is ERC721Enumerable, Ownable {
 
     // View the power of a token
     function power(uint256 _tokenId) public view returns (uint256) {
+        require(_exists(_tokenId), "NONEXISTENT_TOKEN");
         return _power[_tokenId];
     }
 
     // Returns the type based on it's power, which can be fish, shark, whale or kraken
     function tokenType(uint256 _tokenId) public view returns (string memory) {
-        require(_exists(_tokenId), "MUST_EXIST");
+        require(_exists(_tokenId), "NONEXISTENT_TOKEN");
         uint256 power_ = power(_tokenId);
         if (power_ >= 1000) {
             return "kraken";
@@ -109,7 +110,7 @@ contract Poseidon is ERC721Enumerable, Ownable {
 
     // Override tokenURI to add the type
     function tokenURI(uint256 tokenId) public view virtual override(ERC721) returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        require(_exists(tokenId), "NONEXISTENT_TOKEN");
         string memory baseURI = _baseURI();
 
         if (IpfsURI) {

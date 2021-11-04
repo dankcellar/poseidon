@@ -34,28 +34,39 @@ client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
     client.channels.fetch(process.env.LAST_HUNTS_CHANNEL_ID).then(function (c) {
         lastHuntsChannel = c;
+        console.log("Last hunts channel ready");
     });
     client.channels.fetch(process.env.LAST_SALES_CHANNEL_ID).then(function (c) {
         lastSalesChannel = c;
+        console.log("Last sales channel ready");
     });
 });
 // Command for showing fish data
 client.on("messageCreate", (message) => {
-    if (message.content.startsWith("#")) {
-        const tokenId = parseInt(message.content.substr(1));
-        if (tokenId <= 0 || tokenId > 10000) {
-            return;
-        }
-        poseidon.methods.power(tokenId).call().then(function (power) {
-            if (power === 0) {
-                message.reply("Fish #" + tokenId + " has been hunted");
-            }
+    async function showFish(tokenId) {
+        try {
+            const power = await poseidon.methods.power(tokenId).call();
+            const owner = await poseidon.methods.ownerOf(tokenId).call();
             const buildMessage = new Discord.MessageEmbed()
-                .setTitle("Fish #" + power)
+                .setTitle("Fish #" + tokenId)
                 .setThumbnail(tokenImage(tokenId, power))
-                .addFields({name: "Power:", value: power})
-            message.reply({embeds: [buildMessage]});
-        });
+                .addFields({name: "Power:", value: power}, {name: "Owner", value: owner})
+            await message.channel.send({embeds: [buildMessage]});
+            // await message.reply({embeds: [buildMessage]});
+        } catch (e) {
+            await message.channel.send("Fish #" + tokenId + " has been hunted");
+        }
+    }
+    try {
+        if (message.content.startsWith("#")) {
+            const tokenId = parseInt(message.content.substr(1));
+            if (tokenId <= 0 || tokenId > 10000) {
+                return;
+            }
+            showFish(tokenId).then();
+        }
+    } catch (e) {
+        console.log("Error while showing fish: " + e);
     }
 });
 // Login
