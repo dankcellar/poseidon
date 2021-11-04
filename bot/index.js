@@ -15,10 +15,12 @@ function tokenImage(tokenId, power) {
 
 // Infura connection
 let infuraWsURL = "wss://mainnet.infura.io/ws/v3/" + process.env.INFURA_ID;
-let openseaURL = "https://api.opensea.io/api/v1/";
+let openseaApiURL = "https://api.opensea.io/api/v1/";
+let openseaTokenURL = "https://opensea.io/assets/" + process.env.CONTRACT_ADDRESS + "/";
 if (process.env.LIVE_MODE !== "1") {
     infuraWsURL = "wss://rinkeby.infura.io/ws/v3/" + process.env.INFURA_ID;
-    openseaURL = "https://rinkeby-api.opensea.io/api/v1/";
+    openseaApiURL = "https://rinkeby-api.opensea.io/api/v1/";
+    openseaTokenURL = "https://testnets.opensea.io/assets/" + process.env.CONTRACT_ADDRESS + "/";
 }
 const web3 = new Web3(new Web3.providers.WebsocketProvider(infuraWsURL));
 const poseidon = new web3.eth.Contract(PoseidonAbi, process.env.CONTRACT_ADDRESS);
@@ -48,9 +50,10 @@ client.on("messageCreate", (message) => {
             const power = await poseidon.methods.power(tokenId).call();
             const owner = await poseidon.methods.ownerOf(tokenId).call();
             const buildMessage = new Discord.MessageEmbed()
-                .setTitle("Fish #" + tokenId)
+                .setTitle("Fish #" + tokenId + " ~" + power)
+                .setURL(openseaTokenURL + tokenId)
                 .setThumbnail(tokenImage(tokenId, power))
-                .addFields({name: "Power:", value: power}, {name: "Owner", value: owner})
+                .addFields({name: "Owner", value: owner})
             await message.channel.send({embeds: [buildMessage]});
             // await message.reply({embeds: [buildMessage]});
         } catch (e) {
@@ -84,6 +87,7 @@ poseidon.events.Hunt({fromBlock: 0})
             const power = e.returnValues["power"];
             const buildMessage = new Discord.MessageEmbed()
                 .setTitle("Hunt!")
+                .setURL(openseaTokenURL + predator)
                 .setDescription("Fish #" + predator + " hunted fish #" + prey)
                 .setThumbnail(tokenImage(predator, power))
                 .addFields({name: "Power:", value: power}, {name: "Owner:", value: from})
@@ -111,7 +115,7 @@ async function openseaSales() {
             limit: "20",
             occurred_after: lastSaleDate.toString(),
         });
-        const resp = await fetch(openseaURL + "events?" + params);
+        const resp = await fetch(openseaApiURL + "events?" + params);
         const openSeaResponse = await resp.json();
         if (typeof openSeaResponse.asset_events !== "undefined") {
             openSeaResponse.asset_events.forEach(function (sale) {

@@ -112,6 +112,11 @@ contract('Poseidon', accounts => {
                 return instance.mint(2, {from: alice, value: "159999999999999999"});
             });
         });
+        it("should fail if token does not exist", async function() {
+            await expectedExceptionPromise(function() {
+                return instance.power(1, {from: owner});
+            });
+        });
         // it("should not exceed max supply (needs mint public to be set to 10)", async function() {
         //     for (let i = 0; i < 8; i++) {
         //         await instance.mint(1, {from: alice, value: fishPrice});

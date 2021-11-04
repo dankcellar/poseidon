@@ -1251,6 +1251,7 @@ contract Poseidon is ERC721Enumerable, Ownable {
 
     // View the power of a token
     function power(uint256 _tokenId) public view returns (uint256) {
+        require(_exists(_tokenId), "NONEXISTENT_TOKEN");
         return _power[_tokenId];
     }
 
