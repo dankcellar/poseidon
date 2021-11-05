@@ -3,6 +3,7 @@ const PoseidonAbi = require("./abi/Poseidon.json");
 const Discord = require("discord.js");
 const ethers = require("ethers");
 const fetch = require("node-fetch");
+const oauth = require('oauth');
 require("dotenv").config();
 
 
@@ -13,7 +14,7 @@ function tokenImage(tokenId, power) {
 }
 
 
-// Infura connection
+// Infura init
 let infuraWsURL = "wss://mainnet.infura.io/ws/v3/" + process.env.INFURA_ID;
 let openseaApiURL = "https://api.opensea.io/api/v1/";
 let openseaTokenURL = "https://opensea.io/assets/" + process.env.CONTRACT_ADDRESS + "/";
@@ -26,6 +27,28 @@ const web3 = new Web3(new Web3.providers.WebsocketProvider(infuraWsURL));
 const poseidon = new web3.eth.Contract(PoseidonAbi, process.env.CONTRACT_ADDRESS);
 
 
+// Twitter init
+const twitter_oauth = new oauth.OAuth(
+    'https://api.twitter.com/oauth/request_token',
+    'https://api.twitter.com/oauth/access_token',
+    process.env.TWITTER_APP_CONSUMER_KEY,
+    process.env.TWITTER_APP_SECRET,
+    '1.0A',
+    null,
+    'HMAC-SHA1'
+);
+function sentTweet(status) {
+    const postBody = {"status": status};
+    twitter_oauth.post('https://api.twitter.com/1.1/statuses/update.json',
+        process.env.TWITTER_USER_TOKEN,
+        process.env.TWITTER_USER_SECRET,
+        postBody,
+        "",
+        function(e, data, res) { if (e) { console.log(e); }}
+    );
+}
+
+
 // Discord init
 let lastHuntsChannel = null;
 let lastSalesChannel = null;
@@ -34,16 +57,16 @@ const client = new Discord.Client({
 });
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
-    client.channels.fetch(process.env.LAST_HUNTS_CHANNEL_ID).then(function (c) {
+    client.channels.fetch(process.env.OPENSEA_LAST_HUNTS_CHANNEL_ID).then(function (c) {
         lastHuntsChannel = c;
         console.log("Last hunts channel ready");
     });
-    client.channels.fetch(process.env.LAST_SALES_CHANNEL_ID).then(function (c) {
+    client.channels.fetch(process.env.OPENSEA_LAST_SALES_CHANNEL_ID).then(function (c) {
         lastSalesChannel = c;
         console.log("Last sales channel ready");
     });
 });
-// Command for showing fish data
+// Discord command for showing fish data
 client.on("messageCreate", (message) => {
     async function showFish(tokenId) {
         try {
@@ -76,22 +99,24 @@ client.on("messageCreate", (message) => {
 client.login(process.env.DISCORD_TOKEN);
 
 
-// Hunting event
+// Ethereum hunting event
 poseidon.events.Hunt({fromBlock: 0})
     .on("data", e => {
         try {
-            if (lastHuntsChannel === null) return;
             const from = e.returnValues["from"];
             const predator = e.returnValues["predator"];
             const prey = e.returnValues["prey"];
             const power = e.returnValues["power"];
-            const buildMessage = new Discord.MessageEmbed()
-                .setTitle("Hunt!")
-                .setURL(openseaTokenURL + predator)
-                .setDescription("Fish #" + predator + " hunted fish #" + prey)
-                .setThumbnail(tokenImage(predator, power))
-                .addFields({name: "Power:", value: power}, {name: "Owner:", value: from})
-            lastHuntsChannel.send({embeds: [buildMessage]});
+            sentTweet("Fish #" + predator + " hunted fish #" + prey + " and obtained power ~" + power + " " + openseaTokenURL + predator)
+            if (lastHuntsChannel !== null) {
+                const buildMessage = new Discord.MessageEmbed()
+                    .setTitle("Hunt!")
+                    .setURL(openseaTokenURL + predator)
+                    .setDescription("Fish #" + predator + " hunted fish #" + prey)
+                    .setThumbnail(tokenImage(predator, power))
+                    .addFields({name: "Power:", value: power}, {name: "Owner:", value: from})
+                lastHuntsChannel.send({embeds: [buildMessage]});
+            }
         } catch (e) {
             console.log("Error while processing hunt event: " + e);
         }
@@ -105,8 +130,6 @@ poseidon.events.Hunt({fromBlock: 0})
 let lastSaleDate = Math.floor(new Date().getTime() / 1000);
 async function openseaSales() {
     try {
-        if (lastSalesChannel === null) return;
-        // console.log(lastSaleDate.toString());
         const params = new URLSearchParams({
             asset_contract_address: process.env.CONTRACT_ADDRESS,
             event_type: "successful",
@@ -120,12 +143,15 @@ async function openseaSales() {
         if (typeof openSeaResponse.asset_events !== "undefined") {
             openSeaResponse.asset_events.forEach(function (sale) {
                 const price = ethers.utils.formatEther(sale.total_price || "0");
-                const buildMessage = new Discord.MessageEmbed()
-                    .setTitle(sale.asset.name + " sold!")
-                    .setURL(sale.asset.permalink)
-                    .addFields({name: "Price:", value: price + " eth"})
-                    .setThumbnail(sale.asset.image_url)
-                lastSalesChannel.send({embeds: [buildMessage]});
+                sentTweet(sale.asset.name + " sold for " + price + " eth! " + sale.asset.permalink)
+                if (lastSalesChannel !== null) {
+                    const buildMessage = new Discord.MessageEmbed()
+                        .setTitle(sale.asset.name + " sold!")
+                        .setURL(sale.asset.permalink)
+                        .addFields({name: "Price:", value: price + " eth"})
+                        .setThumbnail(sale.asset.image_url)
+                    lastSalesChannel.send({embeds: [buildMessage]});
+                }
                 // update date to always fetch only the new ones
                 const saleDate = Math.floor(new Date(sale.created_date + "Z").getTime() / 1000);
                 if (saleDate > lastSaleDate) {
