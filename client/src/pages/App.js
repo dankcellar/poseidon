@@ -10,6 +10,7 @@ import {useWeb3React} from "@web3-react/core";
 import AppContext from "./AppContext";
 import Footer from "../components/Footer";
 import Connector from "../components/Connector";
+import Verify from "./Verify";
 
 export default function App() {
     const [poseidon, setPoseidon] = useState(null);
@@ -37,6 +38,7 @@ export default function App() {
                     <Connector/>
                     <div className="main">
                         <Switch>
+                            <Route path="/verify/:id" component={Verify}/>
                             <Route path="/account" component={Account}/>
                             <Route path="/token/:id" component={Token}/>
                             <Route path="/" component={Home}/>

@@ -1245,6 +1245,7 @@ contract Poseidon is ERC721Enumerable, Ownable {
         require(ownerOf(_prey) == _msgSender(), "MUST_OWN_PREY");
         require(_power[_predator] >= _power[_prey], "PREY_MORE_POWER_THAN_PREDATOR");
         _burn(_prey);
+        _power[_prey] = 0;
         _power[_predator] += _power[_prey];
         emit Hunt(_msgSender(), _predator, _prey, _power[_predator]);
     }

@@ -103,7 +103,6 @@ export default function Mint() {
                     <p>Sold out!</p>
                     <p>Thanks for all the fish!</p>
                     <p>Current total supply is {totalSupply}/10000</p>
-
                 </div>
             );
         }

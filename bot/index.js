@@ -78,21 +78,20 @@ client.on("messageCreate", (message) => {
                 .setThumbnail(tokenImage(tokenId, power))
                 .addFields({name: "Owner", value: owner})
             await message.channel.send({embeds: [buildMessage]});
-            // await message.reply({embeds: [buildMessage]});
         } catch (e) {
             await message.channel.send("Fish #" + tokenId + " has been hunted");
         }
     }
+    async function verify(message) {
+        await message.reply(message.author.username + ", please check DM");
+        message.author.send("To verify your account please click on the following link: " + process.env.FRONTEND + "verify/" + message.author.id);
+    }
     try {
-        if (message.content.startsWith("#")) {
-            const tokenId = parseInt(message.content.substr(1));
-            if (tokenId <= 0 || tokenId > 10000) {
-                return;
-            }
-            showFish(tokenId).then();
+        if (message.content === "!join") {
+            verify(message).then();
         }
     } catch (e) {
-        console.log("Error while showing fish: " + e);
+        console.log("Error while verifying: " + e);
     }
 });
 // Login
