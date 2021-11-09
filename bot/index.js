@@ -89,9 +89,15 @@ client.on("messageCreate", (message) => {
     try {
         if (message.content === "!join") {
             verify(message).then();
+        } else if (message.content.startsWith("#")) {
+            const tokenId = parseInt(message.content.substr(1));
+            if (tokenId <= 0 || tokenId > 10000) {
+                return;
+            }
+            showFish(tokenId).then();
         }
     } catch (e) {
-        console.log("Error while verifying: " + e);
+        console.log("Error while doing command: " + e);
     }
 });
 // Login
