@@ -27,28 +27,6 @@ const web3 = new Web3(new Web3.providers.WebsocketProvider(infuraWsURL));
 const poseidon = new web3.eth.Contract(PoseidonAbi, process.env.CONTRACT_ADDRESS);
 
 
-// Twitter init
-const twitter_oauth = new oauth.OAuth(
-    'https://api.twitter.com/oauth/request_token',
-    'https://api.twitter.com/oauth/access_token',
-    process.env.TWITTER_APP_CONSUMER_KEY,
-    process.env.TWITTER_APP_SECRET,
-    '1.0A',
-    null,
-    'HMAC-SHA1'
-);
-function sentTweet(status) {
-    const postBody = {"status": status};
-    twitter_oauth.post('https://api.twitter.com/1.1/statuses/update.json',
-        process.env.TWITTER_USER_TOKEN,
-        process.env.TWITTER_USER_SECRET,
-        postBody,
-        "",
-        function(e, data, res) { if (e) { console.log(e); }}
-    );
-}
-
-
 // Discord init
 let lastHuntsChannel = null;
 let lastSalesChannel = null;
@@ -102,6 +80,50 @@ client.on("messageCreate", (message) => {
 });
 // Login
 client.login(process.env.DISCORD_TOKEN);
+
+
+// Verification center
+function verifyId(verificationJson, id) {
+
+}
+function verifyAll(verificationJson) {
+    // for keys in verification Json verify each
+}
+async function verify() {
+    // get verification json
+    const resp = await fetch(process.env.VERIFICATION_URL);
+    const verificationJson = await resp.json();
+    // decide what to do depending on the mode specified in the env
+    if (process.env.VERIFICATION_MODE === "INTERVAL") {
+        setInterval(verifyAll(verificationJson), 1000*60*60*24);  // every day
+    } else if (process.env.VERIFICATION_MODE === "ONCE") {
+        verifyAll(verificationJson);
+    } else {
+        verifyId(verificationJson, process.env.VERIFICATION_MODE);
+    }
+}
+
+
+// Twitter init
+const twitter_oauth = new oauth.OAuth(
+    'https://api.twitter.com/oauth/request_token',
+    'https://api.twitter.com/oauth/access_token',
+    process.env.TWITTER_APP_CONSUMER_KEY,
+    process.env.TWITTER_APP_SECRET,
+    '1.0A',
+    null,
+    'HMAC-SHA1'
+);
+function sentTweet(status) {
+    const postBody = {"status": status};
+    twitter_oauth.post('https://api.twitter.com/1.1/statuses/update.json',
+        process.env.TWITTER_USER_TOKEN,
+        process.env.TWITTER_USER_SECRET,
+        postBody,
+        "",
+        function(e, data, res) { if (e) { console.log(e); }}
+    );
+}
 
 
 // Ethereum hunting event

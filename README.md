@@ -35,6 +35,8 @@ sudo npm install -g n
 sudo n 16.6.0  
 cd bot-hunt
 node .
+// if VERIFICATION_MODE=ONCE will verify once, if VERIFICATION_MODE=INTERVAL will verify once a while, if
+// VERIFICATION_MODE=number will verify a specific user id
 ```
 
 ## OpenSea
