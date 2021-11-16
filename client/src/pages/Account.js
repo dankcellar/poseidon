@@ -33,10 +33,10 @@ export default function Account() {
         for (let i = 0; i < balance; i++) {
             // eslint-disable-next-line no-loop-func
             poseidon.methods.tokenOfOwnerByIndex(account, i).call().then(function (tokenId) {
-                poseidon.methods.power(tokenId).call().then(function (power) {
+                poseidon.methods.level(tokenId).call().then(function (level) {
                     myTokens.push({
                         id: parseInt(tokenId),
-                        power: power,
+                        level: level,
                     });
                     if (++j === parseInt(balance)) {
                         myTokens.sort(tokenSort);
@@ -77,7 +77,7 @@ export default function Account() {
                         <div className="token-item" key={f.id}>
                             <div className="token-image">{renderTokenImage(f)}</div>
                             <div className="token-name">Fish #{f.id}</div>
-                            <div className="token-power">Power: {f["power"]}</div>
+                            <div className="token-level">Level: {f["level"]}</div>
                             <div className="token-view">
                                 <Link to={"/token/" + f.id} className="view-button">View</Link>
                             </div>

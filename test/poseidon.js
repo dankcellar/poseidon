@@ -50,9 +50,9 @@ contract('Poseidon', accounts => {
             // check token 1 owner
             let ownerOfToken1 = await instance.ownerOf(1, {from: owner});
             assert.strictEqual(ownerOfToken1, alice, "Owner of token 1 should be alice");
-            // check token 1 power
-            let power = await instance.power(1, {from: owner});
-            assert.strictEqual(power.toString(), "1", "Token 1 should have power 1");
+            // check token 1 level
+            let level = await instance.level(1, {from: owner});
+            assert.strictEqual(level.toString(), "1", "Token 1 should have level 1");
             // mint to bob
             await instance.mint(1, {from: bob, value: fishPrice});
             let ownerOfToken2 = await instance.ownerOf(2, {from: owner});
@@ -77,11 +77,11 @@ contract('Poseidon', accounts => {
             let ownerOfToken10 = await instance.ownerOf(10, {from: owner});
             assert.strictEqual(ownerOfToken1, alice, "Owner of token 1 should be alice");
             assert.strictEqual(ownerOfToken10, alice, "Owner of token 10 should be alice");
-            // check token 1 power
-            let power1 = await instance.power(1, {from: owner});
-            let power10 = await instance.power(10, {from: owner});
-            assert.strictEqual(power1.toString(), "1", "Token 1 should have power 1");
-            assert.strictEqual(power10.toString(), "1", "Token 10 should have power 1");
+            // check token 1 level
+            let level1 = await instance.level(1, {from: owner});
+            let level10 = await instance.level(10, {from: owner});
+            assert.strictEqual(level1.toString(), "1", "Token 1 should have level 1");
+            assert.strictEqual(level10.toString(), "1", "Token 10 should have level 1");
             // check public minted
             const publicMint = await instance.publicMinted({from: alice});
             assert.strictEqual(publicMint.toString(), "10", "Public mint amount should be correct");
@@ -114,7 +114,7 @@ contract('Poseidon', accounts => {
         });
         it("should fail if token does not exist", async function() {
             await expectedExceptionPromise(function() {
-                return instance.power(1, {from: owner});
+                return instance.level(1, {from: owner});
             });
         });
         // it("should not exceed max supply (needs mint public to be set to 10)", async function() {
@@ -149,9 +149,9 @@ contract('Poseidon', accounts => {
             // check token 1 owner
             let ownerOfToken1 = await instance.ownerOf(1, {from: owner});
             assert.strictEqual(ownerOfToken1, owner, "Owner of token 1 should be owner");
-            // check token 1 power
-            let power = await instance.power(1, {from: owner});
-            assert.strictEqual(power.toString(), "1", "Token 1 should have power 1");
+            // check token 1 level
+            let level = await instance.level(1, {from: owner});
+            assert.strictEqual(level.toString(), "1", "Token 1 should have level 1");
             // check public minted
             const publicMint = await instance.publicMinted({from: alice});
             assert.strictEqual(publicMint.toString(), "0", "Public mint amount should be correct");
@@ -164,11 +164,11 @@ contract('Poseidon', accounts => {
             let ownerOfToken2 = await instance.ownerOf(2, {from: owner});
             assert.strictEqual(ownerOfToken1, alice, "Owner of token 1 should be alice");
             assert.strictEqual(ownerOfToken2, bob, "Owner of token 1 should be bob");
-            // check tokens power
-            let power1 = await instance.power(1, {from: owner});
-            let power2 = await instance.power(2, {from: owner});
-            assert.strictEqual(power1.toString(), "1", "Token 1 should have power 1");
-            assert.strictEqual(power2.toString(), "1", "Token 2 should have power 1");
+            // check tokens level
+            let level1 = await instance.level(1, {from: owner});
+            let level2 = await instance.level(2, {from: owner});
+            assert.strictEqual(level1.toString(), "1", "Token 1 should have level 1");
+            assert.strictEqual(level2.toString(), "1", "Token 2 should have level 1");
         });
         it("should not let alice mint", async function() {
             await expectedExceptionPromise(function() {
@@ -336,7 +336,7 @@ contract('Poseidon', accounts => {
             assert.strictEqual(args["from"], alice, "Token should come from alice");
             assert.strictEqual(args["predator"].toString(), "1", "Predator should be 1");
             assert.strictEqual(args["prey"].toString(), "2", "Prey should be 2");
-            assert.strictEqual(args["power"].toString(), "2", "New power should be 2");
+            assert.strictEqual(args["level"].toString(), "2", "New level should be 2");
             // check token owners
             let ownerOfToken1 = await instance.ownerOf(1, {from: owner});
             assert.strictEqual(ownerOfToken1, alice, "Owner of token 1 should be alice");
@@ -344,22 +344,22 @@ contract('Poseidon', accounts => {
                 // second token should be burned
                 return instance.ownerOf(2, {from: owner});
             });
-            // check token 1 power
-            let power = await instance.power(1, {from: bob});
-            assert.strictEqual(power.toString(), "2", "Token 1 should have power 2");
+            // check token 1 level
+            let level = await instance.level(1, {from: bob});
+            assert.strictEqual(level.toString(), "2", "Token 1 should have level 2");
         });
         it("should mint five fish and hunt between them", async function() {
             await instance.mint(5, {from: alice, value: fishPrice*5});
             await instance.hunt(3, 4, {from: alice});
             await instance.hunt(3, 5, {from: alice});
-            // check token 3 power
-            let power1 = await instance.power(3, {from: bob});
-            assert.strictEqual(power1.toString(), "3", "Token 3 should have power 3");
-            // last hunt and check token 1 power
+            // check token 3 level
+            let level1 = await instance.level(3, {from: bob});
+            assert.strictEqual(level1.toString(), "3", "Token 3 should have level 3");
+            // last hunt and check token 1 level
             await instance.hunt(1, 2, {from: alice});
             await instance.hunt(3, 1, {from: alice});
-            let power2 = await instance.power(3, {from: bob});
-            assert.strictEqual(power2.toString(), "5", "Token 3 should have power 5");
+            let level2 = await instance.level(3, {from: bob});
+            assert.strictEqual(level2.toString(), "5", "Token 3 should have level 5");
         });
         it("should private mint and hunt between them", async function() {
             await instance.mintPrivate([alice, alice], {from: owner});
@@ -371,9 +371,9 @@ contract('Poseidon', accounts => {
                 // second token should be burned
                 return instance.ownerOf(2, {from: owner});
             });
-            // check token 1 power
-            let power = await instance.power(1, {from: bob});
-            assert.strictEqual(power.toString(), "2", "Token 1 should have power 2");
+            // check token 1 level
+            let level = await instance.level(1, {from: bob});
+            assert.strictEqual(level.toString(), "2", "Token 1 should have level 2");
         });
         it("should not hunt bigger fish", async function() {
             await instance.mint(3, {from: alice, value: fishPrice*3});
@@ -434,19 +434,19 @@ contract('Poseidon', accounts => {
         });
     });
 
-    describe("accountMaxPower", function() {
-        it("should give the correct amount of max power", async function() {
-            let maxPower = await instance.addressMaxPower(alice, {from: alice});
-            assert.strictEqual(maxPower.toString(), "0", "alice should have max power of 0");
+    describe("accountMaxLevel", function() {
+        it("should give the correct amount of max level", async function() {
+            let maxLevel = await instance.addressMaxLevel(alice, {from: alice});
+            assert.strictEqual(maxLevel.toString(), "0", "alice should have max level of 0");
             await instance.mint(10, {from: alice, value: fishPrice*10});
-            maxPower = await instance.addressMaxPower(alice, {from: alice});
-            assert.strictEqual(maxPower.toString(), "1", "alice should have max power of 1");
+            maxLevel = await instance.addressMaxLevel(alice, {from: alice});
+            assert.strictEqual(maxLevel.toString(), "1", "alice should have max level of 1");
             await instance.hunt(1, 2, {from: alice});
             await instance.hunt(1, 3, {from: alice});
-            let power = await instance.power(1, {from: alice});
-            assert.strictEqual(power.toString(), "3", "Token 1 should have power 3");
-            maxPower = await instance.addressMaxPower(alice, {from: alice});
-            assert.strictEqual(maxPower.toString(), "3", "alice should have max power of 3");
+            let level = await instance.level(1, {from: alice});
+            assert.strictEqual(level.toString(), "3", "Token 1 should have level 3");
+            maxLevel = await instance.addressMaxLevel(alice, {from: alice});
+            assert.strictEqual(maxLevel.toString(), "3", "alice should have max level of 3");
         });
     });
 });

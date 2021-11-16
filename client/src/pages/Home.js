@@ -19,9 +19,9 @@ export default function Home() {
                 <div className="container">
                     <h2>The experiment</h2>
                     <ul>
-                        <li>Will people hunt to achieve more powerful fish for flexing them?</li>
-                        <li>Will more powerful fish be also the rarest fish or rarest fish will be kept at low power for speculation?</li>
-                        <li>Will whales be able to liquidate easily their assets without impacting the floor price by hunting and selling powerful fish instead of many weak fishes?</li>
+                        <li>Will people hunt to achieve more levelful fish for flexing them?</li>
+                        <li>Will more levelful fish be also the rarest fish or rarest fish will be kept at low level for speculation?</li>
+                        <li>Will whales be able to liquidate easily their assets without impacting the floor price by hunting and selling levelful fish instead of many weak fishes?</li>
                         <li>Will there ever exist a Kraken?</li>
                     </ul>
                 </div>

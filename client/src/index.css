@@ -10442,7 +10442,7 @@ strong {
   font-size: 20px;
   padding: 10px;
 }
-.section.account-page .account.has-tokens .token-item .token-power {
+.section.account-page .account.has-tokens .token-item .token-level {
   float: left;
   font-size: 20px;
   padding: 10px;
@@ -10486,7 +10486,7 @@ section.token-page .token .token-data .token-hunt .prey-list .prey .prey-name {
   float: left;
   padding: 5px;
 }
-section.token-page .token .token-data .token-hunt .prey-list .prey .prey-power {
+section.token-page .token .token-data .token-hunt .prey-list .prey .prey-level {
   float: left;
   padding: 5px;
 }

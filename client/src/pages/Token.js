@@ -28,11 +28,11 @@ export default function Token(props) {
         };
 
         if (!poseidon) return;
-        const _power = await poseidon.methods.power(tokenId).call();
+        const _level = await poseidon.methods.level(tokenId).call();
         const _owner = await poseidon.methods.ownerOf(tokenId).call();
         let _token = {
             id: tokenId,
-            power: _power,
+            level: _level,
             owner: _owner,
         };
         setTokenData(_token);
@@ -44,11 +44,11 @@ export default function Token(props) {
             for (let i = 0; i < balance; i++) {
                 // eslint-disable-next-line no-loop-func
                 poseidon.methods.tokenOfOwnerByIndex(account, i).call().then(function (preyId) {
-                    poseidon.methods.power(preyId).call().then(function (preyPower) {
-                        if (preyPower <= _token.power && preyId !== _token.id) {
+                    poseidon.methods.level(preyId).call().then(function (preyLevel) {
+                        if (preyLevel <= _token.level && preyId !== _token.id) {
                             preyList.push({
                                 id: parseInt(preyId),
-                                power: preyPower
+                                level: preyLevel
                             });
                         }
                         if (++j === parseInt(balance)) {
@@ -87,14 +87,14 @@ export default function Token(props) {
             <div className="token-hunt">
                 <h2>Can hunt the following preys:</h2>
                 <p className="token-hunt-alert">When hunting, your prey will be burned (will cease to exist), and the
-                    prey power will be added to Fish #{tokenData.id}.</p>
+                    prey level will be added to Fish #{tokenData.id}.</p>
                 <div className="prey-list">
                     {
                         preys.map(f =>
                             <div className="prey" key={f.id}>
                                 <div className="prey-image">{renderTokenImage(f)}</div>
                                 <div className="prey-name"><Link to={"/token/" + f.id}>Fish #{f.id}</Link></div>
-                                <div className="prey-power">Power: {f.power}</div>
+                                <div className="prey-level">Level: {f.level}</div>
                                 <button ref={setRef(f.id)} className="prey-hunt"
                                         onClick={() => hunt(tokenData.id, f.id)}>Hunt!
                                 </button>
@@ -117,7 +117,7 @@ export default function Token(props) {
                 <div className="token-image">{renderTokenImage(tokenData)}</div>
                 <div className="token-data">
                     <h1>Fish #{tokenData.id}</h1>
-                    <div>Power: {tokenData.power}</div>
+                    <div>Level: {tokenData.level}</div>
                     <div>Owner: {tokenData.owner === account ? "You" : tokenData.owner}</div>
                     <div className="token-hunt">{renderTokenHunt()}</div>
                 </div>

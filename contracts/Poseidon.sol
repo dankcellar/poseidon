@@ -15,15 +15,15 @@ import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/utils/Strings.sol";
 
 /**
- * Poseidon is an ERC721 contract in which each token has a starting power of 1,
- * and each token can increase its own power by hunting another token.
+ * Poseidon is an ERC721 contract in which each token has a starting level of 1,
+ * and each token can increase its own level by hunting another token.
  *
  * An owner of at least two tokens can decide to hunt, by choosing one token to
  * become the predator and another token to become the prey. When hunting, the
- * predator token power becomes the sum of the power of both tokens and the prey
+ * predator token level becomes the sum of the level of both tokens and the prey
  * token is burned.
  *
- * Each token art evolves when its power increases to certain thresholds.
+ * Each token art evolves when its level increases to certain thresholds.
  */
 contract Poseidon is ERC721Enumerable, Ownable {
     using Strings for uint256;
@@ -44,8 +44,8 @@ contract Poseidon is ERC721Enumerable, Ownable {
     uint256 private _publicMinted = 0;
     uint256 private _privateMinted = 0;
 
-    mapping(uint256 => uint256) private _power;
-    event Hunt(address indexed from, uint256 indexed predator, uint256 indexed prey, uint256 power);
+    mapping(uint256 => uint256) private _level;
+    event Hunt(address indexed from, uint256 indexed predator, uint256 indexed prey, uint256 level);
 
     constructor() ERC721("Poseidon", "FISH") {}
 
@@ -60,7 +60,7 @@ contract Poseidon is ERC721Enumerable, Ownable {
         for (uint256 i = 0; i < _quantity; i++) {
             _currentTokenId++;
             _safeMint(msg.sender, _currentTokenId);
-            _power[_currentTokenId] = 1;
+            _level[_currentTokenId] = 1;
         }
     }
 
@@ -71,39 +71,39 @@ contract Poseidon is ERC721Enumerable, Ownable {
         for (uint256 i = 0; i < _to.length; i++) {
             _currentTokenId++;
             _safeMint(_to[i], _currentTokenId);
-            _power[_currentTokenId] = 1;
+            _level[_currentTokenId] = 1;
         }
     }
 
-    // Hunt burns a token and adds it's power to another token
+    // Hunt burns a token and adds it's level to another token
     function hunt(uint256 _predator, uint256 _prey) external {
         require(_predator != _prey, "MUST_BE_DIFFERENT");
         require(ownerOf(_predator) == _msgSender(), "MUST_OWN_PREDATOR");
         require(ownerOf(_prey) == _msgSender(), "MUST_OWN_PREY");
-        require(_power[_predator] >= _power[_prey], "PREY_MORE_POWER_THAN_PREDATOR");
+        require(_level[_predator] >= _level[_prey], "PREY_MORE_LEVEL_THAN_PREDATOR");
         _burn(_prey);
-        _power[_predator] += _power[_prey];
-        _power[_prey] = 0;
-        emit Hunt(_msgSender(), _predator, _prey, _power[_predator]);
+        _level[_predator] += _level[_prey];
+        _level[_prey] = 0;
+        emit Hunt(_msgSender(), _predator, _prey, _level[_predator]);
     }
 
-    // View the power of a token
-    function power(uint256 _tokenId) public view returns (uint256) {
+    // View the level of a token
+    function level(uint256 _tokenId) public view returns (uint256) {
         require(_exists(_tokenId), "NONEXISTENT_TOKEN");
-        return _power[_tokenId];
+        return _level[_tokenId];
     }
 
-    // Returns the type based on it's power, which can be fish, shark, whale or kraken
+    // Returns the type based on it's level, which can be fish, shark, whale or kraken
     function tokenType(uint256 _tokenId) public view returns (string memory) {
         require(_exists(_tokenId), "NONEXISTENT_TOKEN");
-        uint256 power_ = power(_tokenId);
-        if (power_ >= 1000) {
+        uint256 level_ = level(_tokenId);
+        if (level_ >= 1000) {
             return "kraken";
         }
-        if (power_ >= 100) {
+        if (level_ >= 100) {
             return "whale";
         }
-        if (power_ >= 10) {
+        if (level_ >= 10) {
             return "shark";
         }
         return "fish";
@@ -118,8 +118,8 @@ contract Poseidon is ERC721Enumerable, Ownable {
             string memory type_ = tokenType(tokenId);
             return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), "/", type_)) : "";
         }
-        uint256 power_ = power(tokenId);
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), "/", power_.toString())) : "";
+        uint256 level_ = level(tokenId);
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), "/", level_.toString())) : "";
     }
 
     // Set starting block for the sale
@@ -142,7 +142,7 @@ contract Poseidon is ERC721Enumerable, Ownable {
         _contractURI = contractURI_;
     }
 
-    // Set Contract-level URI. IPFS URI allows completely decentralized metadata without the power attribute
+    // Set Contract-level URI. IPFS URI allows completely decentralized metadata without the level attribute
     function setBaseURI(string memory baseURI_, bool _ipfs) external onlyOwner {
         _tokenBaseURI = baseURI_;
         IpfsURI = _ipfs;
@@ -163,17 +163,17 @@ contract Poseidon is ERC721Enumerable, Ownable {
         return _publicMinted;
     }
 
-    // View account max power
-    function addressMaxPower(address _address) public view returns (uint256) {
-        uint256 _maxPower = 0;
+    // View account max level
+    function addressMaxLevel(address _address) public view returns (uint256) {
+        uint256 _maxLevel = 0;
         uint256 _balanceOfAddress = balanceOf(_address);
         for (uint256 i = 0; i < _balanceOfAddress; i++) {
             uint256 _tokenId = tokenOfOwnerByIndex(_address, i);
-            uint256 power_ = power(_tokenId);
-            if (power_ > _maxPower) {
-                _maxPower = power_;
+            uint256 level_ = level(_tokenId);
+            if (level_ > _maxLevel) {
+                _maxLevel = level_;
             }
         }
-        return _maxPower;
+        return _maxLevel;
     }
 }

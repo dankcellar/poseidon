@@ -8,10 +8,10 @@ require("dotenv").config();
 
 
 /**
- * Returns the image url for a certain tokenId and power
+ * Returns the image url for a certain tokenId and level
  */
-function tokenImage(tokenId, power) {
-    const type = (power >= 1000) ? "kraken" : ((power >= 100) ? "whale" : (power >= 10) ? "shark" : "fish");
+function tokenImage(tokenId, level) {
+    const type = (level >= 1000) ? "kraken" : ((level >= 100) ? "whale" : (level >= 10) ? "shark" : "fish");
     return process.env.API_IMAGE_URL + tokenId + "-" + type + ".png";
 }
 
@@ -54,12 +54,12 @@ client.on("ready", () => {
 client.on("messageCreate", (message) => {
     async function showFish(tokenId) {
         try {
-            const power = await poseidon.methods.power(tokenId).call();
+            const level = await poseidon.methods.level(tokenId).call();
             const owner = await poseidon.methods.ownerOf(tokenId).call();
             const buildMessage = new Discord.MessageEmbed()
-                .setTitle("Fish #" + tokenId + " ~" + power)
+                .setTitle("Fish #" + tokenId + " ~" + level)
                 .setURL(openseaTokenURL + tokenId)
-                .setThumbnail(tokenImage(tokenId, power))
+                .setThumbnail(tokenImage(tokenId, level))
                 .addFields({name: "Owner", value: owner})
             await message.channel.send({embeds: [buildMessage]});
         } catch (e) {
@@ -99,8 +99,8 @@ async function verifyId(verificationJson, id) {
         if (shouldBeAddress !== account) {
             return;
         }
-        // check the max power by address
-        const maxPower = await poseidon.methods.addressMaxPower(account).call();
+        // check the max level by address
+        const maxLevel = await poseidon.methods.addressMaxLevel(account).call();
         // change roles
         let server = client.guilds.cache.get("900684982845071421");
         let fishRole = server.roles.cache.get("907686362411577345");
@@ -110,7 +110,7 @@ async function verifyId(verificationJson, id) {
         let discordMember = await server.members.fetch(id);
         if (typeof(discordMember) !== "undefined") {
             // fish
-            if (maxPower >= 1) {
+            if (maxLevel >= 1) {
                 if (!discordMember.roles.cache.has(fishRole.id)) {
                     await discordMember.roles.add(fishRole);
                 }
@@ -120,7 +120,7 @@ async function verifyId(verificationJson, id) {
                 }
             }
             // sharks
-            if (maxPower >= 10) {
+            if (maxLevel >= 10) {
                 if (!discordMember.roles.cache.has(sharkRole.id)) {
                     await discordMember.roles.add(sharkRole);
                 }
@@ -130,7 +130,7 @@ async function verifyId(verificationJson, id) {
                 }
             }
             // whales
-            if (maxPower >= 100) {
+            if (maxLevel >= 100) {
                 if (!discordMember.roles.cache.has(whaleRole.id)) {
                     await discordMember.roles.add(whaleRole);
                 }
@@ -140,7 +140,7 @@ async function verifyId(verificationJson, id) {
                 }
             }
             // kraken
-            if (maxPower >= 1000) {
+            if (maxLevel >= 1000) {
                 if (!discordMember.roles.cache.has(krakenRole.id)) {
                     await discordMember.roles.add(krakenRole);
                 }
@@ -223,15 +223,15 @@ poseidon.events.Hunt({fromBlock: 0})
             const from = e.returnValues["from"];
             const predator = e.returnValues["predator"];
             const prey = e.returnValues["prey"];
-            const power = e.returnValues["power"];
-            sentTweet("Fish #" + predator + " hunted fish #" + prey + " and obtained power ~" + power + " " + openseaTokenURL + predator)
+            const level = e.returnValues["level"];
+            sentTweet("Fish #" + predator + " hunted fish #" + prey + " and obtained level ~" + level + " " + openseaTokenURL + predator)
             if (lastHuntsChannel !== null) {
                 const buildMessage = new Discord.MessageEmbed()
                     .setTitle("Hunt!")
                     .setURL(openseaTokenURL + predator)
                     .setDescription("Fish #" + predator + " hunted fish #" + prey)
-                    .setThumbnail(tokenImage(predator, power))
-                    .addFields({name: "Power:", value: power}, {name: "Owner:", value: from})
+                    .setThumbnail(tokenImage(predator, level))
+                    .addFields({name: "Level:", value: level}, {name: "Owner:", value: from})
                 lastHuntsChannel.send({embeds: [buildMessage]});
             }
         } catch (e) {
