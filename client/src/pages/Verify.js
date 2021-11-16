@@ -23,6 +23,7 @@ export default function Verify(props) {
             try {
                 const signature = await library.eth.personal.sign(discordId, account);
                 await verifySignature(discordId, account, signature);
+                console.log(discordId, account, signature);
                 setVerified(true);
                 addMessage("Verified successfully");
             } catch (e) {

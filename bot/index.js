@@ -7,14 +7,18 @@ const oauth = require('oauth');
 require("dotenv").config();
 
 
-// Returns the image url for a certain tokenId and power
+/**
+ * Returns the image url for a certain tokenId and power
+ */
 function tokenImage(tokenId, power) {
     const type = (power >= 1000) ? "kraken" : ((power >= 100) ? "whale" : (power >= 10) ? "shark" : "fish");
     return process.env.API_IMAGE_URL + tokenId + "-" + type + ".png";
 }
 
 
-// Infura init
+/**
+ * Infura init
+ */
 let infuraWsURL = "wss://mainnet.infura.io/ws/v3/" + process.env.INFURA_ID;
 let openseaApiURL = "https://api.opensea.io/api/v1/";
 let openseaTokenURL = "https://opensea.io/assets/" + process.env.CONTRACT_ADDRESS + "/";
@@ -27,7 +31,9 @@ const web3 = new Web3(new Web3.providers.WebsocketProvider(infuraWsURL));
 const poseidon = new web3.eth.Contract(PoseidonAbi, process.env.CONTRACT_ADDRESS);
 
 
-// Discord init
+/**
+ * Discord init
+ */
 let lastHuntsChannel = null;
 let lastSalesChannel = null;
 const client = new Discord.Client({
@@ -82,29 +88,119 @@ client.on("messageCreate", (message) => {
 client.login(process.env.DISCORD_TOKEN);
 
 
-// Verification center
-function verifyId(verificationJson, id) {
-
-}
-function verifyAll(verificationJson) {
-    // for keys in verification Json verify each
-}
-async function verify() {
-    // get verification json
-    const resp = await fetch(process.env.VERIFICATION_URL);
-    const verificationJson = await resp.json();
-    // decide what to do depending on the mode specified in the env
-    if (process.env.VERIFICATION_MODE === "INTERVAL") {
-        setInterval(verifyAll(verificationJson), 1000*60*60*24);  // every day
-    } else if (process.env.VERIFICATION_MODE === "ONCE") {
-        verifyAll(verificationJson);
-    } else {
-        verifyId(verificationJson, process.env.VERIFICATION_MODE);
+/**
+ * Verification center
+ */
+async function verifyId(verificationJson, id) {
+    try {
+        const account = verificationJson[id].address;
+        // verify signature
+        const shouldBeAddress = web3.eth.accounts.recover(id, verificationJson[id].signature);
+        if (shouldBeAddress !== account) {
+            return;
+        }
+        // check the max power by address
+        let maxPower = 0;
+        const balance = await poseidon.methods.balanceOf(account).call();
+        for (let i = 0; i < balance; i++) {
+            const tokenId = await poseidon.methods.tokenOfOwnerByIndex(account, i).call();
+            const power = await poseidon.methods.power(tokenId).call();
+            if (power > maxPower) {
+                maxPower = power;
+            }
+        }
+        // change roles
+        let server = client.guilds.cache.get("900684982845071421");
+        let fishRole = server.roles.cache.get("907686362411577345");
+        let sharkRole = server.roles.cache.get("907686488752398338");
+        let whaleRole = server.roles.cache.get("907686636756819978");
+        let krakenRole = server.roles.cache.get("907686705706975282");
+        let discordMember = await server.members.fetch(id);
+        if (typeof(discordMember) !== "undefined") {
+            // fish
+            if (maxPower >= 1) {
+                if (!discordMember.roles.cache.has(fishRole.id)) {
+                    await discordMember.roles.add(fishRole);
+                }
+            } else {
+                if (discordMember.roles.cache.has(fishRole.id)) {
+                    await discordMember.roles.remove(fishRole);
+                }
+            }
+            // sharks
+            if (maxPower >= 10) {
+                if (!discordMember.roles.cache.has(sharkRole.id)) {
+                    await discordMember.roles.add(sharkRole);
+                }
+            } else {
+                if (discordMember.roles.cache.has(sharkRole.id)) {
+                    await discordMember.roles.remove(sharkRole);
+                }
+            }
+            // whales
+            if (maxPower >= 100) {
+                if (!discordMember.roles.cache.has(whaleRole.id)) {
+                    await discordMember.roles.add(whaleRole);
+                }
+            } else {
+                if (discordMember.roles.cache.has(whaleRole.id)) {
+                    await discordMember.roles.remove(whaleRole);
+                }
+            }
+            // kraken
+            if (maxPower >= 1000) {
+                if (!discordMember.roles.cache.has(krakenRole.id)) {
+                    await discordMember.roles.add(krakenRole);
+                }
+            } else {
+                if (discordMember.roles.cache.has(krakenRole.id)) {
+                    await discordMember.roles.remove(krakenRole);
+                }
+            }
+        }
+        console.log("User " + id + " has been verified");
+    } catch (e) {
+        console.log("When verifying " + id + ": " + e)
     }
 }
+async function verifyAll() {
+    try {
+        const resp = await fetch(process.env.VERIFICATION_URL);
+        const verificationJson = await resp.json();
+        const keys = Object.keys(verificationJson);
+        for (let i = 0; i < keys.length; ++i) {
+            await verifyId(verificationJson, keys[i]);
+        }
+        console.log("All users have been verified");
+    } catch (e) {
+        console.log("When verifying all: " + e)
+    }
+}
+async function verify() {
+    // decide what to do depending on the mode specified in the env
+    if (process.env.VERIFICATION_MODE === "INTERVAL") {
+        setInterval(function () {
+            verifyAll().then();
+        }, 1000*60*60*24);  // every day
+    } else if (process.env.VERIFICATION_MODE === "ONCE") {
+        await verifyAll();
+        process.exit(0);
+    } else {
+        const resp = await fetch(process.env.VERIFICATION_URL);
+        const verificationJson = await resp.json();
+        await verifyId(verificationJson, process.env.VERIFICATION_MODE);
+        process.exit(0);
+    }
+}
+verify().then();
+if (process.env.VERIFICATION_MODE !== "INTERVAL") {
+    return;
+}
 
 
-// Twitter init
+/**
+ * Twitter init
+ */
 const twitter_oauth = new oauth.OAuth(
     'https://api.twitter.com/oauth/request_token',
     'https://api.twitter.com/oauth/access_token',
@@ -126,7 +222,9 @@ function sentTweet(status) {
 }
 
 
-// Ethereum hunting event
+/**
+ * Ethereum hunting event
+ */
 poseidon.events.Hunt({fromBlock: 0})
     .on("data", e => {
         try {
@@ -153,7 +251,9 @@ poseidon.events.Hunt({fromBlock: 0})
     });
 
 
-// Opensea sales
+/**
+ * Opensea sales
+ */
 let lastSaleDate = Math.floor(new Date().getTime() / 1000);
 async function openseaSales() {
     try {
