@@ -82,8 +82,8 @@ contract Poseidon is ERC721Enumerable, Ownable {
         require(ownerOf(_prey) == _msgSender(), "MUST_OWN_PREY");
         require(_power[_predator] >= _power[_prey], "PREY_MORE_POWER_THAN_PREDATOR");
         _burn(_prey);
-        _power[_prey] = 0;
         _power[_predator] += _power[_prey];
+        _power[_prey] = 0;
         emit Hunt(_msgSender(), _predator, _prey, _power[_predator]);
     }
 
@@ -161,5 +161,19 @@ contract Poseidon is ERC721Enumerable, Ownable {
     // View public minted amount
     function publicMinted() public view returns (uint256) {
         return _publicMinted;
+    }
+
+    // View account max power
+    function accountMaxPower(address account) public view returns (uint256) {
+        uint256 _maxPower = 0;
+        uint256 _balanceOfAccount = balanceOf(account);
+        for (uint256 i = 0; i < _balanceOfAccount; i++) {
+            uint256 _tokenId = tokenOfOwnerByIndex(account, i);
+            uint256 power_ = power(_tokenId);
+            if (power_ > _maxPower) {
+                _maxPower = power_;
+            }
+        }
+        return _maxPower;
     }
 }

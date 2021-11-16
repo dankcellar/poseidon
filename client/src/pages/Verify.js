@@ -52,7 +52,7 @@ export default function Verify(props) {
             return (
                 <div className="verify-success">
                     <p>Verified successfully, please let some time for the machines to get you verified.</p>
-                    <p>Typically it takes between minutes and couple of hours, if after that time you are not verified contact an Admin in Discord.</p>
+                    <p>Typically it takes between minutes and four hours, if after that time you are not verified contact an Admin in Discord.</p>
                 </div>
             );
         }

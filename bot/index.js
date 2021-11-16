@@ -100,15 +100,7 @@ async function verifyId(verificationJson, id) {
             return;
         }
         // check the max power by address
-        let maxPower = 0;
-        const balance = await poseidon.methods.balanceOf(account).call();
-        for (let i = 0; i < balance; i++) {
-            const tokenId = await poseidon.methods.tokenOfOwnerByIndex(account, i).call();
-            const power = await poseidon.methods.power(tokenId).call();
-            if (power > maxPower) {
-                maxPower = power;
-            }
-        }
+        const maxPower = await poseidon.methods.accountMaxPower(account).call();
         // change roles
         let server = client.guilds.cache.get("900684982845071421");
         let fishRole = server.roles.cache.get("907686362411577345");
@@ -181,7 +173,7 @@ async function verify() {
     if (process.env.VERIFICATION_MODE === "INTERVAL") {
         setInterval(function () {
             verifyAll().then();
-        }, 1000*60*60*24);  // every day
+        }, 1000*60*60*4);  // every 4 hours
     } else if (process.env.VERIFICATION_MODE === "ONCE") {
         await verifyAll();
         process.exit(0);
