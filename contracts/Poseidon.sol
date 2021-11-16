@@ -164,11 +164,11 @@ contract Poseidon is ERC721Enumerable, Ownable {
     }
 
     // View account max power
-    function accountMaxPower(address account) public view returns (uint256) {
+    function addressMaxPower(address _address) public view returns (uint256) {
         uint256 _maxPower = 0;
-        uint256 _balanceOfAccount = balanceOf(account);
-        for (uint256 i = 0; i < _balanceOfAccount; i++) {
-            uint256 _tokenId = tokenOfOwnerByIndex(account, i);
+        uint256 _balanceOfAddress = balanceOf(_address);
+        for (uint256 i = 0; i < _balanceOfAddress; i++) {
+            uint256 _tokenId = tokenOfOwnerByIndex(_address, i);
             uint256 power_ = power(_tokenId);
             if (power_ > _maxPower) {
                 _maxPower = power_;

@@ -100,7 +100,7 @@ async function verifyId(verificationJson, id) {
             return;
         }
         // check the max power by address
-        const maxPower = await poseidon.methods.accountMaxPower(account).call();
+        const maxPower = await poseidon.methods.addressMaxPower(account).call();
         // change roles
         let server = client.guilds.cache.get("900684982845071421");
         let fishRole = server.roles.cache.get("907686362411577345");

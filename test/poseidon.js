@@ -436,16 +436,16 @@ contract('Poseidon', accounts => {
 
     describe("accountMaxPower", function() {
         it("should give the correct amount of max power", async function() {
-            let maxPower = await instance.accountMaxPower(alice, {from: alice});
+            let maxPower = await instance.addressMaxPower(alice, {from: alice});
             assert.strictEqual(maxPower.toString(), "0", "alice should have max power of 0");
             await instance.mint(10, {from: alice, value: fishPrice*10});
-            maxPower = await instance.accountMaxPower(alice, {from: alice});
+            maxPower = await instance.addressMaxPower(alice, {from: alice});
             assert.strictEqual(maxPower.toString(), "1", "alice should have max power of 1");
             await instance.hunt(1, 2, {from: alice});
             await instance.hunt(1, 3, {from: alice});
             let power = await instance.power(1, {from: alice});
             assert.strictEqual(power.toString(), "3", "Token 1 should have power 3");
-            maxPower = await instance.accountMaxPower(alice, {from: alice});
+            maxPower = await instance.addressMaxPower(alice, {from: alice});
             assert.strictEqual(maxPower.toString(), "3", "alice should have max power of 3");
         });
     });
