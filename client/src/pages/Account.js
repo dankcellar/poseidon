@@ -22,7 +22,7 @@ export default function Account() {
             return 0;
         };
 
-        if (!poseidon) return;
+        if (!poseidon || !account) return;
         const balance = await poseidon.methods.balanceOf(account).call();
         let myTokens = [];
         if (parseInt(balance) === 0) {

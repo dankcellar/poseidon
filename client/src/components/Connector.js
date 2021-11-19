@@ -33,7 +33,7 @@ export default function Account() {
     }, [poseidon, account]);
 
     const fetchBalance = async () => {
-        if (!poseidon) return;
+        if (!poseidon || ! account) return;
         const _tokenBalance = await poseidon.methods.balanceOf(account).call();
         setTokenBalance(_tokenBalance);
         // subscribe to blocks to update the current block
@@ -63,7 +63,7 @@ export default function Account() {
     }
 
     return (
-        <section className="section account p-4">
+        <section className="section account p-0">
             <div className="container">
                 <div className="left">
                     <span className="connected-hello">

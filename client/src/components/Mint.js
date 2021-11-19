@@ -83,7 +83,7 @@ export default function Mint() {
         if (startingBlock === 0) return;
         if (startingBlock === 999999999) {
             return (
-                <div className="mint-date">
+                <div className="mint mint-date">
                     <p>Mint starts on {process.env.REACT_APP_MINT_DATE}, some hours before we will announce the exact block.</p>
                     <p>Price per mint is {process.env.REACT_APP_MINT_PRICE} eth.</p>
                 </div>
@@ -91,7 +91,7 @@ export default function Mint() {
         }
         if (currentBlock < startingBlock) {
             return (
-                <div className="mint-block">
+                <div className="mint mint-block">
                     <p>Sale starts in {startingBlock - currentBlock} blocks.</p>
                     <p>Price per mint is {process.env.REACT_APP_MINT_PRICE} eth.</p>
                 </div>
@@ -99,7 +99,7 @@ export default function Mint() {
         }
         if (publicMinted === process.env.REACT_APP_MINT_PUBLIC) {
             return (
-                <div className="mint-sold-out">
+                <div className="mint mint-sold-out">
                     <p>Sold out!</p>
                     <p>Thanks for all the fish!</p>
                     <p>Current total supply is {totalSupply}/10000</p>
@@ -108,10 +108,12 @@ export default function Mint() {
         }
         return (
             <div className="mint">
-                <p>{process.env.REACT_APP_MINT_PUBLIC - publicMinted} available fish.</p>
-                <p>Price per mint is {process.env.REACT_APP_MINT_PRICE} eth.</p>
+                <p>{process.env.REACT_APP_MINT_PUBLIC - publicMinted} fish left</p>
+                <p>Price per mint is {process.env.REACT_APP_MINT_PRICE} eth + gas</p>
+                <div className="mint-now">
                     <Select name="mint-amount" label="Mint" options={mintAmountOptions()} onChange={onSelectMintAmount}/>
-                <button onClick={() => mint()}>Mint</button>
+                    <button onClick={() => mint()}>Mint</button>
+                </div>
             </div>
         );
     }
@@ -119,7 +121,7 @@ export default function Mint() {
     return (
         <div className="component-mint">
             {
-                active ? getMintJSX() : <button onClick={connect}>Connect</button>
+                active ? getMintJSX() : <button className="mint-connect" onClick={connect}>Connect to mint</button>
             }
         </div>
     );

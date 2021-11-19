@@ -10306,7 +10306,12 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 }
 
 html {
-  background: #363942;
+  background: #222222;
+}
+
+body {
+  font-family: "Mali", sans-serif;
+  font-size: 18px;
 }
 
 a {
@@ -10317,13 +10322,80 @@ a:hover, a:active {
   text-decoration: underline;
 }
 
-strong {
-  color: white;
+h1, h2 {
+  font-weight: 500;
+  font-size: 30px;
 }
 
-.main {
-  background: #2d4842;
-  color: white;
+strong {
+  font-weight: 600;
+}
+
+button {
+  font-family: "Mali", sans-serif;
+  font-size: 18px;
+  border-radius: 10px;
+  padding: 6px 13px;
+  background-color: #d0571f;
+  border: 2px solid #cf9275;
+  color: #fff;
+}
+button:hover, button:active {
+  cursor: pointer;
+  background-color: #e16a33;
+  border: 2px solid #e3ad94;
+}
+
+.main section {
+  padding: 0;
+}
+.main section .container {
+  padding: 30px;
+  color: #000;
+  background: #fff;
+}
+.main section:last-child .container {
+  border-radius: 0 0 5px 5px;
+}
+
+.component-mint {
+  text-align: center;
+  height: 400px;
+}
+.component-mint .mint {
+  background: #5f6ca3;
+  color: #fff;
+  border-radius: 80px;
+  max-width: 400px;
+  position: relative;
+  top: 250px;
+  left: 50%;
+  margin-left: -200px;
+  padding: 20px 0 8px;
+  box-shadow: 3px 3px 3px #000;
+}
+.component-mint .mint .mint-now {
+  margin-top: 20px;
+  display: inline-block;
+  width: 160px;
+  overflow: hidden;
+}
+.component-mint .mint .mint-now .field {
+  width: 75px;
+  float: left;
+  margin-right: 10px;
+}
+.component-mint .mint .mint-now .field .label {
+  display: none;
+}
+.component-mint .mint .mint-now button {
+  float: right;
+}
+.component-mint .mint-connect {
+  position: relative;
+  top: 280px;
+  font-size: 28px;
+  padding: 16px 24px;
 }
 
 .container {
@@ -10361,14 +10433,14 @@ strong {
   height: 40px;
 }
 .section.navbar .container .right ul li a.twitter {
-  margin-right: 10px;
+  margin-right: 25px;
 }
 .section.navbar .container .right ul li a.twitter img {
   margin: 2px;
   width: 36px;
 }
 .section.navbar .container .right ul li a.opensea {
-  margin-left: 10px;
+  margin-left: 25px;
 }
 .section.navbar .container .right ul li a.opensea img {
   margin: 3px;
@@ -10378,16 +10450,19 @@ strong {
   opacity: 0.6;
 }
 
-.section.account {
-  background: #363942;
-  color: white;
-}
 .section.account .container {
+  background: #5f6ca3;
+  color: white;
   display: block;
   overflow: hidden;
+  border-radius: 5px 5px 0 0;
+  padding: 10px 16px;
 }
 .section.account .container .left {
   float: left;
+}
+.section.account .container .left .connected-hello {
+  line-height: 40px;
 }
 @media (max-width: 450px) {
   .section.account .container .left .connected-hello .version-normal {
@@ -10407,7 +10482,7 @@ strong {
 }
 
 .section.foot {
-  background: #363942;
+  background: #222222;
   color: white;
 }
 .section.foot .container {
