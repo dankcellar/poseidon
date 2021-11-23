@@ -5,10 +5,10 @@ const crypto = require('crypto');
 
 const sourceData = require("./source-data");
 const contract = require("./contract");
-const tokenAmount = 20;
+const tokenAmount = 100;
 const tokenName = "Poseidon";
 const tokenExternalBaseUrl = "http://placeholder.eth.link/token/";
-const dataTypes = ["Background", "Body", "Eyes", "Mouth", "Hat", "Misc"];
+const dataTypes = ["Background", "Body", "Eyes", "Head", "MiscTop", "MiscRightArm", "MiscLeftArm", "MiscBody1", "MiscBody2", "Mouth"];
 const tokenTypes = ["Fish", "Shark", "Whale", "Kraken"];
 const imageSize = 350;
 
@@ -74,6 +74,7 @@ async function generateAllTokens(data) {
     let allMetadata = {};
     // find max p for each type
     let maxP = {};
+    console.log(dataTypes);
     dataTypes.forEach(e => {maxP[e] = findMaxP(data[e])});
     // generate each token
     for (let tokenId = 1; tokenId <= tokenAmount; tokenId++) {
@@ -107,7 +108,11 @@ async function generateAllTokens(data) {
             metadata.attributes.push({"trait_type": "Type", "value": tokenTypes[i]});
             dataTypes.forEach(e => {
                 if (randomPicks[e].value !== "") {
-                    metadata.attributes.push({"trait_type": e, "value": randomPicks[e].value});
+                    let value = randomPicks[e].value;
+                    if (value.startsWith("Misc")) {
+                        value = "Misc";
+                    }
+                    metadata.attributes.push({"trait_type": e, "value": value});
                 }
             });
             const metadataJSON = JSON.stringify(metadata);
