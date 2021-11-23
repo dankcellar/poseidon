@@ -28,8 +28,8 @@ import "openzeppelin-solidity/contracts/utils/Strings.sol";
 contract Poseidon is ERC721Enumerable, Ownable {
     using Strings for uint256;
 
-    uint256 public constant MINT_PUBLIC = 9580;
-    uint256 public constant MINT_PRIVATE = 420;
+    uint256 public constant MINT_PUBLIC = 9500;
+    uint256 public constant MINT_PRIVATE = 500;
     uint256 public constant MINT_PRICE = 0.08 ether;
     uint256 public constant MINT_MAX_TX = 10;
     // md5(md5fish1.md5shark1.md5whale1.md5kraken1.md5fish2.md5shark2.md5whale2.md5kraken2...)
@@ -95,7 +95,6 @@ contract Poseidon is ERC721Enumerable, Ownable {
 
     // Returns the type based on it's level, which can be fish, shark, whale or kraken
     function tokenType(uint256 _tokenId) public view returns (string memory) {
-        require(_exists(_tokenId), "NONEXISTENT_TOKEN");
         uint256 level_ = level(_tokenId);
         if (level_ >= 1000) {
             return "kraken";
@@ -111,7 +110,6 @@ contract Poseidon is ERC721Enumerable, Ownable {
 
     // Override tokenURI to add the type
     function tokenURI(uint256 tokenId) public view virtual override(ERC721) returns (string memory) {
-        require(_exists(tokenId), "NONEXISTENT_TOKEN");
         string memory baseURI = _baseURI();
 
         if (IpfsURI) {
