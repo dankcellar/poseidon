@@ -277,7 +277,7 @@ module.exports = {
                 Fish: [{image: "misc4-42towel-fish.png", order: 210}],
                 Shark: [{image: "misc4-42towel-shark.png", order: 210}],
                 Whale: [{image: "misc4-42towel-whale.png", order: 210}],
-                Kraken: [{image: "misc4-42towel-kraken.png", order: 210}]
+                Kraken: [{image: "misc4-42towel-kraken.png", order: 500}]
             }
         },
     ],
