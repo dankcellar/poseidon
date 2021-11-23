@@ -10,7 +10,7 @@ const tokenName = "Poseidon";
 const tokenExternalBaseUrl = "http://placeholder.eth.link/token/";
 const dataTypes = ["Background", "Body", "Eyes", "Head", "MiscTop", "MiscRightArm", "MiscLeftArm", "MiscBody1", "MiscBody2", "Mouth"];
 const tokenTypes = ["Fish", "Shark", "Whale", "Kraken"];
-const imageSize = 350;
+const imageSize = 2048;
 
 function prepareDirs() {
     fs.rmdirSync("images", {recursive: true});
@@ -61,7 +61,7 @@ async function generateAllTokens(data) {
     }
     async function generateImage(imagesArray) {
         imagesArray.sort(compareByOrder);
-        const canvas = createCanvas(350, 350);
+        const canvas = createCanvas(imageSize, imageSize);
         const ctx = canvas.getContext('2d');
         for (let i = 0; i < imagesArray.length; i++) {
             const img = await loadImage("source/" + imagesArray[i].image);

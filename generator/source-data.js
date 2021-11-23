@@ -138,10 +138,10 @@ module.exports = {
             value: "Eyepatch",
             p: 80,
             source: {
-                Fish: [{image: "eyes-eyepatch-fish.png", order: 310}],
-                Shark: [{image: "eyes-eyepatch-shark.png", order: 310}],
-                Whale: [{image: "eyes-eyepatch-whale.png", order: 310}],
-                Kraken: [{image: "eyes-eyepatch-kraken.png", order: 310}]
+                Fish: [{image: "eyes-eyepatch-fish.png", order: 310}, {image: "eyes-eyes-fish.png", order: 309}],
+                Shark: [{image: "eyes-eyepatch-shark.png", order: 310}, {image: "eyes-eyes-fish.png", order: 309}],
+                Whale: [{image: "eyes-eyepatch-whale.png", order: 310}, {image: "eyes-eyes-fish.png", order: 309}],
+                Kraken: [{image: "eyes-eyepatch-kraken.png", order: 310}, {image: "eyes-eyes-fish.png", order: 309}]
             }
         },
         {
