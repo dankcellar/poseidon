@@ -224,7 +224,9 @@ poseidon.events.Hunt({fromBlock: 0})
             const predator = e.returnValues["predator"];
             const prey = e.returnValues["prey"];
             const level = e.returnValues["level"];
-            sentTweet("Fish #" + predator + " hunted fish #" + prey + " and obtained level ~" + level + " " + openseaTokenURL + predator)
+            fetch(openseaApiURL + "asset/" + process.env.CONTRACT_ADDRESS + "/" + predator + "/?force_update=true").then();
+            fetch(openseaApiURL + "asset/" + process.env.CONTRACT_ADDRESS + "/" + prey + "/?force_update=true").then();
+            sentTweet("Fish #" + predator + " hunted fish #" + prey + " and obtained level ~" + level + " " + openseaTokenURL + predator);
             if (lastHuntsChannel !== null) {
                 const buildMessage = new Discord.MessageEmbed()
                     .setTitle("Hunt!")
