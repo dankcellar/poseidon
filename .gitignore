@@ -13,9 +13,3 @@ dist/
 
 # npm
 package-lock.json
-
-# generator
-/generator/source/
-!/generator/source/.gitkeep
-/generator/ipfs/
-/generator/images/
