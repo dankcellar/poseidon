@@ -31,7 +31,6 @@ contract Poseidon is ERC721Enumerable, Ownable {
     uint256 public constant MINT_PUBLIC = 9500;
     uint256 public constant MINT_PRIVATE = 500;
     uint256 public constant MINT_PRICE = 0.08 ether;
-    uint256 public constant MINT_MAX_TX = 10;
     // md5(md5fish1.md5shark1.md5whale1.md5kraken1.md5fish2.md5shark2.md5whale2.md5kraken2...)
     string public constant PROVENANCE_HASH = "";
 
@@ -50,18 +49,15 @@ contract Poseidon is ERC721Enumerable, Ownable {
     constructor() ERC721("Poseidon", "FISH") {}
 
     // Public sale
-    function mint(uint256 _quantity) external payable {
+    function mint() external payable {
         require(block.number >= _startingBlock, "SALE_NOT_STARTED");
-        require(_quantity <= MINT_MAX_TX, "QUANTITY_ABOVE_MAX_MINT");
-        require(_publicMinted + _quantity <= MINT_PUBLIC, "WOULD_EXCEED_SUPPLY");
-        require(msg.value >= MINT_PRICE * _quantity, "NOT_ENOUGH_ETH");
+        require(_publicMinted < MINT_PUBLIC, "WOULD_EXCEED_SUPPLY");
+        require(msg.value == MINT_PRICE, "NOT_MINT_PRICE");
         require(msg.sender == tx.origin, "CONTRACTS_CANNOT_MINT");
-        _publicMinted += _quantity;
-        for (uint256 i = 0; i < _quantity; i++) {
-            _currentTokenId++;
-            _safeMint(msg.sender, _currentTokenId);
-            _level[_currentTokenId] = 1;
-        }
+        _publicMinted += 1;
+        _currentTokenId++;
+        _safeMint(msg.sender, _currentTokenId);
+        _level[_currentTokenId] = 1;
     }
 
     // Minting for the devs, gifts, giveaways, derivatives and marketing
