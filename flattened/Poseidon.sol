@@ -1199,7 +1199,7 @@ contract Poseidon is ERC721Enumerable, Ownable {
 
     string private _contractURI = "";
     string private _tokenBaseURI = "";
-    bool private IpfsURI = false;
+    bool private _ipfs = false;
 
     uint256 private _startingBlock = 999999999;
     uint256 private _currentTokenId = 0;
@@ -1271,7 +1271,7 @@ contract Poseidon is ERC721Enumerable, Ownable {
     function tokenURI(uint256 tokenId) public view virtual override(ERC721) returns (string memory) {
         string memory baseURI = _baseURI();
 
-        if (IpfsURI) {
+        if (_ipfs) {
             string memory type_ = tokenType(tokenId);
             return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), "/", type_)) : "";
         }
@@ -1300,9 +1300,9 @@ contract Poseidon is ERC721Enumerable, Ownable {
     }
 
     // Set Contract-level URI. IPFS URI allows completely decentralized metadata without the level attribute
-    function setBaseURI(string memory baseURI_, bool _ipfs) external onlyOwner {
+    function setBaseURI(string memory baseURI_, bool ipfs_) external onlyOwner {
         _tokenBaseURI = baseURI_;
-        IpfsURI = _ipfs;
+        _ipfs = ipfs_;
     }
 
     // Overrides _baseURI to be a custom URI
