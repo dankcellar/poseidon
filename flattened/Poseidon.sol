@@ -1211,7 +1211,7 @@ contract Poseidon is ERC721Enumerable, Ownable {
     uint256 public constant MINT_PRIVATE = 500;
     uint256 public constant MINT_PRICE = 0.08 ether;
     // md5(md5fish1.md5shark1.md5whale1.md5kraken1.md5fish2.md5shark2.md5whale2.md5kraken2...)
-    string public constant PROVENANCE_HASH = "";
+    string public provenance = "";
 
     string private _contractURI = "";
     string private _tokenBaseURI = "";
@@ -1348,5 +1348,11 @@ contract Poseidon is ERC721Enumerable, Ownable {
             }
         }
         return _maxLevel;
+    }
+
+    // Provenance
+    function setProvenance(string memory _provenance) external onlyOwner {
+        require(bytes(provenance).length == 0, "Provenance already set!");
+        provenance = _provenance;
     }
 }
