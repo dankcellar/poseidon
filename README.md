@@ -2,47 +2,26 @@
 
 # Poseidon
 
-Poseidon is a ERC-721 token.
+Poseidon is an ERC721 contract in which each token has a starting level of 1, and each token can increase its own level
+by hunting another token.
+
+An owner of at least two tokens can decide to hunt, by choosing one token to become the predator and another token to
+become the prey. When hunting, the predator token level becomes the sum of the level of both tokens and the prey token
+is burned.
+
+Each token art evolves when its level increases to certain thresholds.
 
 ```
 # installing
 sudo npm install -g truffle
 sudo npm install -g ganache-cli
 npm install
-cp .env.sample .env && vim .env
-cd client/ && npm install
 
 # testing
 ganache-cli
 truffle test
 
-# running development
-ganache-cli -m "seed"
-truffle migrate --reset --network development
-cd client/ && npm start
-
 # testnet/production
 truffle-flattener ./contracts/Poseidon.sol > ./flattened/Poseidon.sol
-# make file nice
 https://remix.ethereum.org/
-
-# generator
-cd generator
-node .
-
-# bots
-sudo npm install -g n
-sudo n 16.6.0  
-cd bot-hunt
-node .
-// if VERIFICATION_MODE=ONCE will verify once, if VERIFICATION_MODE=INTERVAL will verify once a while, if
-// VERIFICATION_MODE=number will verify a specific user id
-```
-
-## OpenSea
-
-```
-https://api.opensea.io/asset/
-https://testnets-api.opensea.io/api/v1/asset/<your_contract_address>/<token_id>/?force_update=true
-https://testnets-api.opensea.io/asset/<your_contract_address>/<your_token_id>/validate/ 
 ```
